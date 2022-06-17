@@ -1,0 +1,16 @@
+a{
+  text-decoration: none;
+  color: #000;
+}
+li{
+  list-style: none;
+}
+
+.signout {
+  padding:.75rem;
+  border-radius:5px;
+  background-color: chartreuse;
+  color:#000;
+  border:none;
+  margin-left:3rem;
+}
