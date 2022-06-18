@@ -1,12 +1,12 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import axios from "../../api/axios";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import "./Table.css";
 import { Link, useNavigate } from 'react-router-dom'
 import Header from "../Header/Header.jsx";
 let data;
 const Table = (props) => {
-
+  const axiosPrivate = useAxiosPrivate();
   const [page, setPage] = useState(0);                              // Pagination için hangi sayfanın gösterilmesi gerektiğini tutan değişken. State içinde tutulmasının sebebi yeni sayfaya geçildiğinde re-render edilmesi.
   const [rowCount, setRowCount] = useState(1);
   const [url, setUrl] = useState(props.url + "?pn=0&ps=1");   // Pagination için API tarafında hangi adrese istek atılması gerektiğini tutan değişken.  State içinde tutulmasının sebebi url değiştiğinde sayfanın re-render edilmesi.
@@ -19,7 +19,7 @@ const Table = (props) => {
 
   useEffect(() => {
     const readData = async () => {
-      await axios.get(url).then(function (response) {               //Genel bir async api isteği işlemidir. Gelen veriyi stateler içinde tutar
+      await axiosPrivate.get(url).then(function (response) {               //Genel bir async api isteği işlemidir. Gelen veriyi stateler içinde tutar
         setData(response.data.data.contentTypes);                                //useEffect ile url değiştikçe yeniden istek atılması sağlanır.
         setCount(response.data.data.totalCount);
       });
