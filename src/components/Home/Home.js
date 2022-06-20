@@ -36,7 +36,7 @@ const Home = () => {
                     <div className="home-links">
                         <Link className="home-link" to="/content-type-builder">Content Type Builder</Link> 
                         <Link className="home-link" to="/content-type-manager">Content Type Manager</Link> 
-                        {/*<Link className="home-link" to="/user-manager">User Manager</Link>*/} 
+                        <Link className="home-link" to="/user-manager">User Manager</Link> 
                     </div>
                 </div>
             </div>
