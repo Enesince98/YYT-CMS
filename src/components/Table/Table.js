@@ -43,7 +43,7 @@ const Table = (props) => {
       navigate(path);                                             //Alt tablonun yükleneceği url adresine gidilir.
     }
   }
-  console.log(count);
+ 
   let pagination = []
   for (let i = 0; i < Math.ceil(count / rowCount); i++) {
     pagination.push(
@@ -51,7 +51,7 @@ const Table = (props) => {
     )
   }
   return (
-    <div><Header />
+    <div>
       <div class="container">
         <div class="row">
           <div class="table-responsive">
