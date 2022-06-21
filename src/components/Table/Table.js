@@ -51,7 +51,8 @@ const Table = (props) => {
     )
   }
   return (
-    <div><Header />
+    <div>
+      <Header />
       <div class="container">
         <div class="row">
           <div class="table-responsive">

@@ -3,11 +3,17 @@ import './Header.js'
 import "./Header.css"
 import {Link} from 'react-router-dom'
 import { useState } from 'react'
+import {useTheme} from "../../context/ThemeContext"
+
 const Header = () => {
     const [isActive, setIsActive]= useState(false);
     function toggle(){
             setIsActive(prev => !prev);
     }
+
+    const {theme, setTheme} = useTheme();
+    console.log(theme);
+
 
   return (
     <header className="header">

@@ -10,7 +10,7 @@ import ContentTypeManager from "./components/ContentTypeManager/ContentTypeManag
 import Contents from "./components/Contents/Contents";
 import UserManager from "./components/UserManager/UserManager";
 import Table from "./components/Table/Table";
-import Header from './components/Header/Header.jsx'
+
 
 /*const ROLES = {
   User: 2001,
@@ -25,11 +25,13 @@ function App() {
         {/* public routes */}
         <Route path="login" element={<Login />} />
         <Route path="unauthorized" element={<Unauthorized />} />
-        <Route path="table" element={<Table />} />
+       
         {/* we want to protect these routes */}
         {/*allowedRoles={[ROLES.User]}*/}
+       
+       
         <Route element={<RequireAuth  />}>
-        
+         <Route path="table" element={<Table />} />
           <Route path="/" element={<Home />} />
           <Route path="content-type-builder" element={<ContentTypeBuilder />} />
           <Route path="content-type-manager/*" element={<ContentTypeManager />}/>
