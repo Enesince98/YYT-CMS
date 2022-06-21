@@ -13,7 +13,7 @@ export const ThemeProvider = ({ children }) => {
     setTheme(JSON.parse(newTheme)); //aldığımız string ifadeyi objeye çevirdik.
   }, []); // Sadece ilk render'da çalışmasını istediğimiz için "[]" koyduk.
 
-
+  console.log(theme);
 
   const values = {
     theme,
