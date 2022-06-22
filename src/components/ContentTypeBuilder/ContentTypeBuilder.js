@@ -90,7 +90,7 @@ const ContentTypeBuilder = () => {
             <input
               id={i}
               type="text"
-              class="form__field"
+              class="form_field"
               placeholder="Field Name"
             />
           </form>
@@ -125,50 +125,51 @@ const ContentTypeBuilder = () => {
           theme === "dark" ? "HomeContainerBoxDark" : "HomeContainerBoxLight"
         }`}
       >
-        <legend>Create Content Type </legend>
+        <div className={`${theme === "dark" ? "darkSpace" : ""}`}>
+          <legend>Create Content Type </legend>
 
-        <div class="container__item">
-          <input
-            type="text"
-            class="form__field"
-            placeholder="Content Type Name"
-            id="contentType"
-          />
+          <div class="container__item">
+            <input
+              type="text"
+              class="form_field"
+              placeholder="Content Type Name"
+              id="contentType"
+            />
 
-          {/* <button type="button" class="btn btn--primary btn--inside uppercase">Send</button> */}
-        </div>
-        <legend>Choose features:</legend>
+            {/* <button type="button" class="btn btn--primary btn--inside uppercase">Send</button> */}
+          </div>
+          <legend>Choose features:</legend>
 
-        <div>{fields}</div>
-        <div>
-          <button
-            id="preview"
-            onClick={addField}
-            class="btn btn--primary uppercase"
+          <div>{fields}</div>
+          <div>
+            <button id="preview" onClick={addField} class="ContentTypeBtn ">
+              Add new field
+            </button>
+            <button id="preview" onClick={previewTable} class="ContentTypeBtn ">
+              Preview
+            </button>
+          </div>
+
+          <div
+            className={`row ${
+              isPreview ? "visible tableContentType" : "invisible"
+            }`}
           >
-            Add new field
-          </button>
-          <button
-            id="preview"
-            onClick={previewTable}
-            class="btn btn--primary uppercase"
-          >
-            Preview
-          </button>
-        </div>
-
-        <div className={`row ${isPreview ? "visible" : "invisible"}`}>
-          <div class="col-12">
-            <table id="fieldInfo" class="table table-bordered table-responsive">
-              <thead>
-                <tr>
-                  <th>Field Name</th>
-                  <th>Field Type</th>
-                  <th>Mandatory</th>
-                </tr>
-              </thead>
-              {preview}
-            </table>
+            <div class="col-12 ">
+              <table
+                id="fieldInfo"
+                class="table table-bordered table-responsive"
+              >
+                <thead>
+                  <tr>
+                    <th>Field Name</th>
+                    <th>Field Type</th>
+                    <th>Mandatory</th>
+                  </tr>
+                </thead>
+                {preview}
+              </table>
+            </div>
           </div>
         </div>
       </div>

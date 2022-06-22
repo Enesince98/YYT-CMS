@@ -35,26 +35,26 @@ const Header = () => {
           onClick={toggle}
         >
           <li className="nav-item">
-            <Link to="/" className="nav-link" activeclassName="active">
+            <Link to="/" className="nav-linkk" activeclassName="active">
               Home
             </Link>
           </li>
           <li className="nav-item">
             <Link
               to="/content-type-manager"
-              className="nav-link"
+              className="nav-linkk"
               activeclassName="active"
             >
               Content Type Manager
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/content-type-builder" className="nav-link">
+            <Link to="/content-type-builder" className="nav-linkk">
               Content Type Builder
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/users" className="nav-link">
+            <Link to="/users" className="nav-linkk">
               Users
             </Link>
           </li>
