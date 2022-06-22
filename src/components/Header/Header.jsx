@@ -19,15 +19,15 @@ const Header = () => {
 
                 </li>
                 <li className="nav-item">
-                <Link to="/content-type-manager" className='nav-link'>Content Type Manager</Link>
+                <Link to="/content-type-manager" className='nav-link'>Content Types</Link>
 
                 </li>
                 <li className="nav-item">
-                 <Link to="/content-type-builder" className='nav-link'>Content Type Builder</Link>
+                 <Link to="/content-type-builder" className='nav-link'>Builder</Link>
 
                 </li>
                 <li className="nav-item">
-                 <Link to="/users" className='nav-link'>Users</Link>
+                 <Link to="/user-manager" className='nav-link'>Users</Link>
                 </li>
             </ul>
             <div className={ `hamburger ${isActive ? 'active' : ''} `} onClick={toggle}>

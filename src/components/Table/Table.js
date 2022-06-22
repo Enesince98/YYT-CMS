@@ -1,26 +1,33 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import axios from "../../api/axios";
 import "./Table.css";
 import { useNavigate } from 'react-router-dom'
-import {Spinner} from 'react-bootstrap'
+import { Spinner } from 'react-bootstrap'
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+import $ from "jquery";
+import InputGroup from 'react-bootstrap/InputGroup';
 let data;
 const Table = (props) => {
-
+  const axiosPrivate = useAxiosPrivate();
+  const [editSection, setEditSection] = useState([]);
   const [page, setPage] = useState(0);                              // Pagination için hangi sayfanın gösterilmesi gerektiğini tutan değişken. State içinde tutulmasının sebebi yeni sayfaya geçildiğinde re-render edilmesi.
   const [rowCount, setRowCount] = useState(2);
   const [url, setUrl] = useState();   // Pagination için API tarafında hangi adrese istek atılması gerektiğini tutan değişken.  State içinde tutulmasının sebebi url değiştiğinde sayfanın re-render edilmesi.
   const [data, setData] = useState([]);                             // API den gelen response içindeki datayı tutmamıza yarayan değişken. Veri geldiğinde tablonun güncellenmesi için state içinde tutuluyor.
-  const [count, setCount] = useState();                             // API den gelen response içindeki data miktarını tutan değişkendir. 
-
-
+  const [count, setCount] = useState();
+  // API den gelen response içindeki data miktarını tutan değişkendir. 
+  const [saveButton,setSaveButton] = useState(false);
   useEffect(() => {
     setUrl(props.url + "?offset=" + page + "&limit=" + rowCount);              //Page değişkeni değiştiğinde yani önceki/sonraki sayfaya geçilmek istendiğinde url içini yeni sayfa numarasına göre günceller.
   }, [page, rowCount]);
 
   useEffect(() => {
     const readData = async () => {
-      await axios.get(url).then(function (response) {               //Genel bir async api isteği işlemidir. Gelen veriyi stateler içinde tutar
+      await axiosPrivate.get(url).then(function (response) {             //Genel bir async api isteği işlemidir. Gelen veriyi stateler içinde tutar
         setData(response.data.data.contentTypes);                                //useEffect ile url değiştikçe yeniden istek atılması sağlanır.
         setCount(response.data.data.totalCount);
       });
@@ -43,56 +50,130 @@ const Table = (props) => {
       let path = `/${props.whoseParent}/${id}`;                   //Seçilen id ye göre alt tablonun yüklenmesi için gereken path oluşturulur.
       navigate(path);                                             //Alt tablonun yükleneceği url adresine gidilir.
     }
-  }
- 
+  };
   let pagination = []
   for (let i = 0; i < Math.ceil(count / rowCount); i++) {
     pagination.push(
       <li className={`page-item ${page == i ? 'active' : ''}`} ><a className="page-link pointer" onClick={() => setPage(i)} class="page-link" >{i + 1}</a></li>
-    )
+    );
+  }
+  let types = ["String", "Number", "Boolean", "Date"]
+  function showContentType(ctid) {
+    if (ctid) {
+      let editingRow = [];
+      editingRow.push(
+        <div class="container">
+          <h1>{data[ctid - 1].name}</h1>
+          <h4>{data[ctid - 1].description}</h4>
+          <div class="row">
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <tbody>
+                  <tr><th>Name</th><th>Type</th><th>Mandatory</th><th>Actions</th></tr>
+                  {data[ctid - 1].fields.map(
+                    (value, index) => (
+                      <tr>
+                        <td><input type="text" defaultValue={value["fieldName"]} /></td>
+                        <td>{types[value["fieldType"]]}</td>
+                        <td>{value["mandatory"] ? "Required" : "Non-required"}</td>
+                        <td>
+                          <button type="button" onClick={(e) => removeContentType(e.target.parentElement.parentElement.rowIndex)} class="btn btn-danger" >
+                            <i class="far fa-trash-alt"></i>
+                          </button></td>
+                      </tr>
+
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <button onClick={() => setEditSection([])}>Go back</button>
+        </div>
+      );
+      setEditSection(editingRow);
+    }
+  }
+  //console.log(Object.values(data[0].fields));
+  function removeContentType(ctid) {
+    let rowidx = ctid - 1
+    console.log("Remove : " + rowidx);
+    if (ctid) {
+      const readData = async () => {
+        await axios.delete("https://localhost:44325/api/contentTypes/" + data[rowidx].id); alert("slşadkslaşd");
+      };
+      readData();
+    };
+
+  }
+  function updateData(e){
+    setSaveButton(e.target.value===e.target.defaultValue);
+    console.log(e.target.parentElement.parentElement.parentElement[0])
+    console.log(data[e.target.parentElement.parentElement.parentElement.rowIndex-1])
   }
   return (
     <div>
-      <div class="container">
+      {editSection}
+      <div class={`container ${editSection.length === 0 ? "" : "d-none"}`}>
         <div class="row">
           <div class="table-responsive">
             {data.length > 0 ? (
               <table class="table table-bordered">
-              <thead>
-                <tr>
-                  {col.map((value) => (
-                    <th scope="col">{value}</th>   //col dizisindeki her bir eleman sütun başlıklarını içerdiği için herbir elemanı th ile form başlığına yazdırılır.
-                  ))}
-                  <th scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((value) => (                               //data değişkeni içerisinde responsedaki tablo girdi verileri bulunur. Bu verilerdeki her bir girdi için yeni bir satır oluşturulur.
-                  <tr>      {/* satıra tıklandığında seçili girdi için eğer alt tablo varsa onun gösterildiği tablo sayfası açılır.  */}
-                    {
-                      Object.values(value).map((v) => (               // Response içindeki girdilerin kendi içinde bir döngü oluşturarak girdilerin içerdiği değerler de okunur.
-                        <td >{Array.isArray(v) ? v.length : v}</td>     // Her bir satırda, girdinin içerdiği değerler, sütunlarına karşılık gelen hücrelere yazdırılır.
-                      ))}
-                    <td className='d-flex justify-content-evenly'>
-                      <button type="button" class="btn btn-primary"><i class="far fa-eye"></i></button>
-                      <button type="button" class="btn btn-success"><i class="fas fa-edit"></i></button>
-                      <button type="button" class="btn btn-danger"><i class="far fa-trash-alt"></i></button>
-                    </td>
+                <thead>
+                  <tr>
+                    {col.map((value) => (
+                      <th scope="col">{value}</th>   //col dizisindeki her bir eleman sütun başlıklarını içerdiği için herbir elemanı th ile form başlığına yazdırılır.
+                    ))}
+                    <th scope="col">Actions</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {data.map((value) => (                               //data değişkeni içerisinde responsedaki tablo girdi verileri bulunur. Bu verilerdeki her bir girdi için yeni bir satır oluşturulur.
+                    <tr>      {/* satıra tıklandığında seçili girdi için eğer alt tablo varsa onun gösterildiği tablo sayfası açılır.  */}
+                      
+                      <td>
+                      <InputGroup className="mb-3">
+                              <InputGroup.Text>{Object.values(value)[0]}</InputGroup.Text>
+                            </InputGroup>
+                            
+                        </td>
+                        <td>
+                        <InputGroup className="mb-3">
+                              <Form.Control aria-label="Amount (to the nearest dollar)" defaultValue = {Object.values(value)[1]} key = {Object.values(value)[1]} onChange={updateData}/>
+                            </InputGroup>
+                        </td>
+                        <td>
+                        <InputGroup className="mb-3">
+                              <Form.Control aria-label="Amount (to the nearest dollar)" defaultValue = {Object.values(value)[2]} key = {Object.values(value)[1]} onChange={updateData}/>
+                            </InputGroup>
+                        </td>
+                        <td>
+                        <InputGroup className="mb-3">
+                              <InputGroup.Text>{Object.values(value)[3].length}</InputGroup.Text>
+                            </InputGroup>
+                        </td>
+                      <td className="d-flex justify-content-evenly">
+                        <button type="button" onClick={(e) => showContentType(e.target.parentElement.parentElement.rowIndex)} class="btn btn-primary" >
+                          <i class="far fa-eye"></i>
+                        </button>
+                        <button type="button" onClick={(e) => removeContentType(e.target.parentElement.parentElement.rowIndex)} class="btn btn-danger" >
+                          <i class="far fa-trash-alt"></i>
+                        </button>
+                      </td>
+                    </tr>
 
-                ))}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
             ) : (
               <Spinner animation="grow" />
             )}
-            
+
           </div>
         </div>
+        <Button className={saveButton?"disabled":""}>Save</Button>
       </div>
-      <div className="container">
-
-
+      <div className={`container ${editSection.length === 0 ? "" : "d-none"}`}>
         <nav aria-label="Page navigation example">
           <ul class="pagination">
             <li className={(page + 1 > 1 ? "page-item is-active" : "page-item disabled")}><a class="page-link pointer" onClick={prevData}>Previous</a></li>

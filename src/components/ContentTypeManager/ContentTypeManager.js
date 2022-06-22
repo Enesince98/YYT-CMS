@@ -16,31 +16,30 @@ const ContentTypeManager = () => {
 	const [contentName, setContentName] = useState("");
 	const [contentDescription, setContentDescription] = useState("");
 	const [contentType, setContentType] = useState();
-	let fields = []
-  const [radioValue,setRadioValue] = useState()
-  const [mandatory,setMandatory] = useState(false);
-  //field name textboxı boşsa veya radio button seçilmemişse butonları disable et.
-  //add fielda tıklanınca ekranı boşalt. ehe
+	const [fields, setFields] = useState([])
+	const [radioValue, setRadioValue] = useState()
+	const [mandatory, setMandatory] = useState(false);
+	const[isDisabled, setIsDisabled] = useState(false);
+	//field name textboxı boşsa veya radio button seçilmemişse butonları disable et.
+	//add fielda tıklanınca ekranı boşalt. ehe
 
-  function loadNext() {
-    setShow(!show);
+	function loadNext() {
+		setShow(!show);
 		setShowNext(true);
-    setContentName($('#contentName').val());
-    setContentDescription($('#contentDescription').val());
-  }
+		setContentName($('#contentName').val());
+		setContentDescription($('#contentDescription').val());
+	}
 
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-    addField();
+		addField();
 		setContentType({
 			contentName,
 			contentDescription,
 			field: fields
 		});
-    console.log(contentType);
 	};
-	console.log(contentType);
 	const radios = [
 		{ name: "Number", value: "0" },
 		{ name: "String", value: "1" },
@@ -48,8 +47,7 @@ const ContentTypeManager = () => {
 		{ name: "Boolean", value: "3" },
 	];
 	function addField() {
-		fields.push({ "fieldName" : $('#fieldName').val(), "fieldType":radioValue, "mandatory":mandatory });
-    console.log(fields);
+		fields.push({ "fieldName": $('#fieldName').val(), "fieldType": radioValue, "mandatory": mandatory });
 	}
 	return (
 		<div>
@@ -69,9 +67,9 @@ const ContentTypeManager = () => {
 							<Form.Control
 								type="text"
 								placeholder="Enter content name"
-                id="contentName"
+								id="contentName"
 								autoFocus
-								
+
 							/>
 						</Form.Group>
 
@@ -79,10 +77,9 @@ const ContentTypeManager = () => {
 							<Form.Label>Content Description</Form.Label>
 							<Form.Control
 								type="text"
-                id="contentDescription"
+								id="contentDescription"
 								placeholder="Enter content description"
 								autoFocus
-								
 							/>
 						</Form.Group>
 						<Modal.Footer>
@@ -92,6 +89,7 @@ const ContentTypeManager = () => {
 							<Button
 								variant="primary"
 								onClick={loadNext}
+								className={isDisabled ? "disabled" : ""}
 							>
 								Next
 							</Button>
@@ -111,7 +109,7 @@ const ContentTypeManager = () => {
 							type="text"
 							placeholder="Enter field name"
 							autoFocus
-							id = "fieldName"
+							id="fieldName"
 						/>
 						<ButtonGroup className="mt-4 d-flex justify-content-between">
 							{radios.map((radio, idx) => (
@@ -134,7 +132,7 @@ const ContentTypeManager = () => {
 								type="checkbox"
 								value={mandatory}
 								id="flexCheckDefault"
-                onChange={()=> setMandatory(!mandatory)}
+								onChange={() => setMandatory(!mandatory)}
 							/>
 							<label class="form-check-label" for="flexCheckDefault">
 								Required
