@@ -107,9 +107,24 @@ const Table = (props) => {
 
   }
   function updateData(e){
-    setSaveButton(e.target.value===e.target.defaultValue);
-    console.log(e.target.parentElement.parentElement.parentElement[0])
-    console.log(data[e.target.parentElement.parentElement.parentElement.rowIndex-1])
+    let idx = e.target.parentElement.parentElement.parentElement.rowIndex-1;
+    setSaveButton(e.target.value!=e.target.defaultValue);
+    console.log(e.target.parentElement.parentElement.parentElement.childNodes[1])
+    data[idx].name=e.target.value
+    console.log(data[idx])
+  }
+  const saveEditedCT = (e) =>{
+    e.preventDefault();
+    data.map(async (value) => {
+      const response = await axios.post(
+        "https://localhost:44325/api/ContentTypes",
+        value,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      ).catch((error)=> (console.log(error.response.status)))
+      })
   }
   return (
     <div>
@@ -171,7 +186,7 @@ const Table = (props) => {
 
           </div>
         </div>
-        <Button className={saveButton?"disabled":""}>Save</Button>
+        <Button className={saveButton?"":"disabled"} onClick = {saveEditedCT}>Save</Button>
       </div>
       <div className={`container ${editSection.length === 0 ? "" : "d-none"}`}>
         <nav aria-label="Page navigation example">
