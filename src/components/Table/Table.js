@@ -2,19 +2,20 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import "./Table.css";
-import { Link, useNavigate } from 'react-router-dom'
-import Header from "../Header/Header.jsx";
+import { useNavigate } from 'react-router-dom'
+import {Spinner} from 'react-bootstrap'
 let data;
 const Table = (props) => {
 
   const [page, setPage] = useState(0);                              // Pagination için hangi sayfanın gösterilmesi gerektiğini tutan değişken. State içinde tutulmasının sebebi yeni sayfaya geçildiğinde re-render edilmesi.
-  const [rowCount, setRowCount] = useState(1);
-  const [url, setUrl] = useState(props.url + "?pn=0&ps=1");   // Pagination için API tarafında hangi adrese istek atılması gerektiğini tutan değişken.  State içinde tutulmasının sebebi url değiştiğinde sayfanın re-render edilmesi.
+  const [rowCount, setRowCount] = useState(2);
+  const [url, setUrl] = useState();   // Pagination için API tarafında hangi adrese istek atılması gerektiğini tutan değişken.  State içinde tutulmasının sebebi url değiştiğinde sayfanın re-render edilmesi.
   const [data, setData] = useState([]);                             // API den gelen response içindeki datayı tutmamıza yarayan değişken. Veri geldiğinde tablonun güncellenmesi için state içinde tutuluyor.
   const [count, setCount] = useState();                             // API den gelen response içindeki data miktarını tutan değişkendir. 
 
+
   useEffect(() => {
-    setUrl(props.url + "?pn=" + page + "&ps=" + rowCount);              //Page değişkeni değiştiğinde yani önceki/sonraki sayfaya geçilmek istendiğinde url içini yeni sayfa numarasına göre günceller.
+    setUrl(props.url + "?offset=" + page + "&limit=" + rowCount);              //Page değişkeni değiştiğinde yani önceki/sonraki sayfaya geçilmek istendiğinde url içini yeni sayfa numarasına göre günceller.
   }, [page, rowCount]);
 
   useEffect(() => {
@@ -55,7 +56,8 @@ const Table = (props) => {
       <div class="container">
         <div class="row">
           <div class="table-responsive">
-            <table class="table table-bordered">
+            {data.length > 0 ? (
+              <table class="table table-bordered">
               <thead>
                 <tr>
                   {col.map((value) => (
@@ -81,6 +83,10 @@ const Table = (props) => {
                 ))}
               </tbody>
             </table>
+            ) : (
+              <Spinner animation="grow" />
+            )}
+            
           </div>
         </div>
       </div>
