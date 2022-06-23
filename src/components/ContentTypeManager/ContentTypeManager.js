@@ -21,6 +21,7 @@ const ContentTypeManager = () => {
 	const [contentName, setContentName] = useState("");
 	const [contentDescription, setContentDescription] = useState("");
 	const [contentType, setContentType] = useState();
+
 	const [fields,setFields] = useState([])
 	const [fieldName,setFieldName] = useState('');
 	const [radioValue,setRadioValue] = useState('')
@@ -47,6 +48,7 @@ const ContentTypeManager = () => {
 			description:contentDescription,
 			fields
 		});
+
 		console.log(fields);
 
 		try {
@@ -91,7 +93,7 @@ const ContentTypeManager = () => {
 		{ name: "Boolean", value: "2" },
 		{ name: "Date", value: "3" },
 	];
-	
+
 	const addField = (e) => {
 		// fields.push({fieldName,fieldType: Number(radioValue),mandatory});
 		setFields( current => [...current,{fieldName,fieldType: Number(radioValue),mandatory}])
@@ -139,7 +141,7 @@ const ContentTypeManager = () => {
 							<Form.Control
 								type="text"
 								placeholder="Enter content name"
-                				id="contentName"
+                id="contentName"
 								autoFocus
 								onBlur={(e)=> setContentName(e.target.value)}
 								
@@ -150,11 +152,10 @@ const ContentTypeManager = () => {
 							<Form.Label>Content Description</Form.Label>
 							<Form.Control
 								type="text"
-                				id="contentDescription"
+                id="contentDescription"
 								placeholder="Enter content description"
 								autoFocus
 								onBlur={(e) => setContentDescription(e.target.value)}
-								
 							/>
 						</Form.Group>
 						<Modal.Footer>
@@ -199,7 +200,6 @@ const ContentTypeManager = () => {
 									value={radio.value}
 									checked={radioValue === radio.value}
 									onChange={(e) => setRadioValue(e.currentTarget.value)}
-									
 								>
 									{radio.name}
 								</ToggleButton>
@@ -211,7 +211,7 @@ const ContentTypeManager = () => {
 								type="checkbox"
 								id="flexCheckDefault"
 								checked={mandatory}
-                				onChange={()=> setMandatory(!mandatory)}
+                onChange={()=> setMandatory(!mandatory)}
 							/>
 							<label class="form-check-label" htmlFor="flexCheckDefault">
 								Required
