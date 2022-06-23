@@ -23,21 +23,17 @@ const ContentTypeManager = () => {
 	const [contentType, setContentType] = useState();
 	const [fields,setFields] = useState([])
 	const [fieldName,setFieldName] = useState('');
-	const [radioValue,setRadioValue] = useState()
+	const [radioValue,setRadioValue] = useState('')
 	const [mandatory,setMandatory] = useState(false);
 	//field name textboxı boşsa veya radio button seçilmemişse butonları disable et.
 	//add fielda tıklanınca ekranı boşalt. ehe
 	
-	
-	useEffect(() => {
-		console.log(fields);
-	},[fields])
 
-	useEffect(() => {
-		console.log(contentType)
-	},[contentType])
 	
-	
+	useEffect(()=> {
+		console.log(radioValue)
+	},[radioValue])
+
 
   function loadNext() {
 	  setShow(!show);
@@ -45,15 +41,13 @@ const ContentTypeManager = () => {
 	}
 
 
-	const handleSubmit = async(e) => {
-		e.preventDefault();
-		addField()
+	const handleSubmit = async() => {
 		setContentType({
 			name:contentName,
 			description:contentDescription,
 			fields
 		});
-		console.log(contentType);
+		console.log(fields);
 
 		try {
 			const response = await axios.post('https://localhost:44325/api/ContentTypes',{
@@ -65,6 +59,7 @@ const ContentTypeManager = () => {
 				headers: { "Content-Type": "application/json" },
 				withCredentials: true,
 			  });
+			  setContentType()
 			  toast.success('Content Type added successfully !', {
 				position: "bottom-right",
 				autoClose: 2000,
@@ -74,7 +69,7 @@ const ContentTypeManager = () => {
 				draggable: true,
 				progress: undefined,
 				});
-
+				setFields([])
 			  
 		}
 		catch(err) {
@@ -87,7 +82,8 @@ const ContentTypeManager = () => {
 				draggable: true,
 				progress: undefined,
 				});
-		}	
+		}
+
 	}
 	const radios = [
 		{ name: "String", value: "0" },
@@ -96,10 +92,11 @@ const ContentTypeManager = () => {
 		{ name: "Date", value: "3" },
 	];
 	
-	const addField = () => {
-		setFields([...fields,{fieldName,fieldType: Number(radioValue),mandatory}])
+	const addField = (e) => {
+		// fields.push({fieldName,fieldType: Number(radioValue),mandatory});
+		setFields( current => [...current,{fieldName,fieldType: Number(radioValue),mandatory}])
 		setFieldName('');
-		setRadioValue();
+		setRadioValue('');
 		setMandatory(false);
 		toast.success('Field added succesfully !', {
 			position: "bottom-right",
@@ -183,6 +180,7 @@ const ContentTypeManager = () => {
 					<Form>
 						<Form.Label>Field Name</Form.Label>
 						<Form.Control
+							required
 							type="text"
 							placeholder="Enter field name"
 							autoFocus
@@ -193,6 +191,7 @@ const ContentTypeManager = () => {
 						<ButtonGroup className="mt-4 d-flex justify-content-between">
 							{radios.map((radio, idx) => (
 								<ToggleButton
+									
 									key={idx}
 									id={`radio-${idx}`}
 									type="radio"
@@ -200,6 +199,7 @@ const ContentTypeManager = () => {
 									value={radio.value}
 									checked={radioValue === radio.value}
 									onChange={(e) => setRadioValue(e.currentTarget.value)}
+									
 								>
 									{radio.name}
 								</ToggleButton>
@@ -210,7 +210,7 @@ const ContentTypeManager = () => {
 								class="form-check-input"
 								type="checkbox"
 								id="flexCheckDefault"
-								defaultValue={mandatory}
+								checked={mandatory}
                 				onChange={()=> setMandatory(!mandatory)}
 							/>
 							<label class="form-check-label" htmlFor="flexCheckDefault">
@@ -219,12 +219,27 @@ const ContentTypeManager = () => {
 						</div>
 
 						<Modal.Footer>
-							<Button variant="primary" onClick={addField}>
+							{fieldName.length ==0 || (radioValue.length == 0) ? (
+							<Button variant="primary" disabled>
+							Add field
+							</Button>	
+							) : (
+								<Button variant="primary"  onClick={addField} >
 								Add field
-							</Button>
-							<Button variant="success" onClick={handleSubmit}>
+								</Button>	
+							) }
+
+
+							{(fields.length == 0 || (fields.length!=0 && (fieldName.length !=0 || radioValue.length != 0)))  ? (
+							<Button variant="success"  disabled>
+							Submit
+							</Button>		
+							) : (
+								<Button variant="success"  onClick={handleSubmit} >
 								Submit
-							</Button>
+								</Button>	
+							) }
+							
 						</Modal.Footer>
 					</Form>
 				</Modal.Body>
