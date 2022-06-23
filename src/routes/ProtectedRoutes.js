@@ -13,6 +13,7 @@ import UserManager from "../components/UserManager/UserManager";
 import Table from "../components/Table/Table";
 import Header from "../components/Header/Header";
 import SideBar from "../components/SideBar/SideBar";
+import User from "../components/Users/User";
 
 function ProtectedRoutes() {
   return (
@@ -39,6 +40,7 @@ function ProtectedRoutes() {
             />
             <Route path="contents/*" element={<Contents />} />
             <Route path="user-manager" element={<UserManager />} />
+            <Route path="users" element={<User />} />
           </Route>
 
           {/* catch all */}
