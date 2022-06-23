@@ -10,7 +10,8 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import $ from "jquery";
 import InputGroup from 'react-bootstrap/InputGroup';
-let data;
+import {toast, ToastContainer} from "react-toastify"; 
+import 'react-toastify/dist/ReactToastify.css';
 const Table = (props) => {
   const axiosPrivate = useAxiosPrivate();
   const [editSection, setEditSection] = useState([]);
@@ -20,7 +21,6 @@ const Table = (props) => {
   const [data, setData] = useState([]);                             // API den gelen response içindeki datayı tutmamıza yarayan değişken. Veri geldiğinde tablonun güncellenmesi için state içinde tutuluyor.
   const [count, setCount] = useState();
   // API den gelen response içindeki data miktarını tutan değişkendir. 
-  const [saveButton,setSaveButton] = useState(false);
   useEffect(() => {
     setUrl(props.url + "?offset=" + page + "&limit=" + rowCount);              //Page değişkeni değiştiğinde yani önceki/sonraki sayfaya geçilmek istendiğinde url içini yeni sayfa numarasına göre günceller.
   }, [page, rowCount]);
@@ -68,16 +68,16 @@ const Table = (props) => {
           <div class="row">
             <div class="table-responsive">
               <table class="table table-bordered">
-                <tbody>
+                <tbody id="fields">
                   <tr><th>Name</th><th>Type</th><th>Mandatory</th><th>Actions</th></tr>
                   {data[ctid - 1].fields.map(
                     (value, index) => (
                       <tr>
-                        <td><input type="text" defaultValue={value["fieldName"]} /></td>
+                        <td><input type="text" defaultValue={value["fieldName"]} key = {value["fieldName"]} onBlur={(e)=>saveEditedField(e,ctid-1)} /></td>
                         <td>{types[value["fieldType"]]}</td>
                         <td>{value["mandatory"] ? "Required" : "Non-required"}</td>
                         <td>
-                          <button type="button" onClick={(e) => removeContentType(e.target.parentElement.parentElement.rowIndex)} class="btn btn-danger" >
+                          <button type="button" onClick={(e) => removeField(e.target.parentElement.parentElement.rowIndex)} class="btn btn-danger" >
                             <i class="far fa-trash-alt"></i>
                           </button></td>
                       </tr>
@@ -88,11 +88,21 @@ const Table = (props) => {
               </table>
             </div>
           </div>
-          <button onClick={() => setEditSection([])}>Go back</button>
+          <div className="container-fluid d-flex justify-content-around">
+          <Button id="saveField" onClick = {sendEditedData}>Save</Button>
+          <Button onClick={(e) => addField(e)}>Add new field</Button>
+          <Button onClick={() => setEditSection([])}>Go back</Button>
+          </div>
         </div>
       );
       setEditSection(editingRow);
     }
+  }
+  function removeField(ctid){
+    console.log("IN PROGRESS")
+  }
+  function addField(ctid){
+    console.log("IN PROGRESS")
   }
   //console.log(Object.values(data[0].fields));
   function removeContentType(ctid) {
@@ -100,7 +110,15 @@ const Table = (props) => {
     console.log("Remove : " + rowidx);
     if (ctid) {
       const readData = async () => {
-        await axios.delete("https://localhost:44325/api/contentTypes/" + data[rowidx].id); alert("slşadkslaşd");
+        await axios.delete("https://localhost:44325/api/contentTypes/" + data[rowidx].id);toast.success('Content Type is succesfully deleted.', {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
       };
       readData();
     };
@@ -108,15 +126,26 @@ const Table = (props) => {
   }
   function updateData(e){
     let idx = e.target.parentElement.parentElement.parentElement.rowIndex-1;
-    setSaveButton(e.target.value!=e.target.defaultValue);
-    console.log(e.target.parentElement.parentElement.parentElement.childNodes[1])
-    data[idx].name=e.target.value
+    if (e.target.value===e.target.defaultValue) {$("#saveCTbtn").addClass("disabled")}
+    else{$("#saveCTbtn").removeClass("disabled")}
+    data[idx].name=$(".js-name")[idx].value
+    data[idx].description=$(".js-description")[idx].value
     console.log(data[idx])
   }
-  const saveEditedCT = (e) =>{
+  function saveEditedField(e,ctid){
+    if (e.target.value===e.target.defaultValue) {$("#saveField").addClass("disabled")}
+    else{$("#saveField").removeClass("disabled")}
+    let a = $("#fields").children()
+    let idx = e.target.parentElement.parentElement.rowIndex-1;
+    console.log($("#fields").children())
+    let newFieldValue = a[idx+1].childNodes[0].childNodes[0].value;
+    data[ctid].fields[idx].fieldName = newFieldValue;
+    console.log(data[ctid])
+  }
+  const sendEditedData = (e) =>{
     e.preventDefault();
     data.map(async (value) => {
-      const response = await axios.post(
+      const response = await axios.put(
         "https://localhost:44325/api/ContentTypes",
         value,
         {
@@ -125,9 +154,21 @@ const Table = (props) => {
         }
       ).catch((error)=> (console.log(error.response.status)))
       })
+    console.log(data);
   }
   return (
     <div>
+      <ToastContainer
+position="bottom-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+/>
       {editSection}
       <div class={`container ${editSection.length === 0 ? "" : "d-none"}`}>
         <div class="row">
@@ -148,18 +189,18 @@ const Table = (props) => {
                       
                       <td>
                       <InputGroup className="mb-3">
-                              <InputGroup.Text>{Object.values(value)[0]}</InputGroup.Text>
+                              <InputGroup.Text id="uid">{Object.values(value)[0]}</InputGroup.Text>
                             </InputGroup>
                             
                         </td>
                         <td>
-                        <InputGroup className="mb-3">
-                              <Form.Control aria-label="Amount (to the nearest dollar)" defaultValue = {Object.values(value)[1]} key = {Object.values(value)[1]} onChange={updateData}/>
+                        <InputGroup  className="mb-3">
+                              <Form.Control className="js-name" defaultValue = {Object.values(value)[1]} key = {Object.values(value)[1]} onBlur={updateData}/>
                             </InputGroup>
                         </td>
                         <td>
                         <InputGroup className="mb-3">
-                              <Form.Control aria-label="Amount (to the nearest dollar)" defaultValue = {Object.values(value)[2]} key = {Object.values(value)[1]} onChange={updateData}/>
+                              <Form.Control className="js-description" defaultValue = {Object.values(value)[2]} key = {Object.values(value)[1]} onBlur={updateData}/>
                             </InputGroup>
                         </td>
                         <td>
@@ -186,8 +227,9 @@ const Table = (props) => {
 
           </div>
         </div>
-        <Button className={saveButton?"":"disabled"} onClick = {saveEditedCT}>Save</Button>
+        <Button id = "saveCTbtn" className="disabled" onClick = {sendEditedData}>Save</Button>
       </div>
+      
       <div className={`container ${editSection.length === 0 ? "" : "d-none"}`}>
         <nav aria-label="Page navigation example">
           <ul class="pagination">
@@ -210,5 +252,4 @@ const Table = (props) => {
     </div>
   );
 };
-
 export default Table;
