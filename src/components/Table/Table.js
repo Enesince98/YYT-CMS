@@ -80,7 +80,7 @@ const Table = (props) => {
           <h4>{data[ctid - 1].description}</h4>
           <div class="row">
             <div class="table-responsive">
-              <table class="table table-bordered">
+            <table id="fieldsTable" class="table table-bordered">
                 <tbody id="fields">
                   <tr>
                     <th>Name</th>
@@ -95,14 +95,14 @@ const Table = (props) => {
                           type="text"
                           defaultValue={value["fieldName"]}
                           key={value["fieldName"]}
-                          onBlur={(e) => saveEditedField(e, ctid - 1)}
+                          onBlur={() => {saveNewFieldChanges(ctid - 1)}}
                         />
                       </td>
                       
 
                       <td>
                         <select
-                          onChange={(e) => saveNewFieldChanges(e, ctid - 1)}
+                          onChange={() => saveNewFieldChanges(ctid - 1)}
                           id="cars"
                           name="cars"
                           defaultValue={value["fieldType"]}
@@ -142,7 +142,7 @@ const Table = (props) => {
                             value["mandatory"] == null ? "" : "disabled"
                           }
                           defaultChecked={value["mandatory"] ? "checked" : ""}
-                          onChange={(e) => saveNewFieldChanges(e, ctid - 1)}
+                          onChange={() => saveNewFieldChanges(ctid - 1)}
                         />
                       </td>
                       <td>
@@ -165,7 +165,7 @@ const Table = (props) => {
             </div>
           </div>
           <div className="container-fluid d-flex justify-content-around">
-            <Button id="saveField" onClick={sendEditedData}>
+            <Button id="saveField" className="disabled" onClick={sendEditedData}>
               Save
             </Button>
             <Button onClick={() => addField(ctid - 1)}>Add new field</Button>
@@ -176,18 +176,27 @@ const Table = (props) => {
       setEditSection(editingRow);
     }
   }
-  function saveNewFieldChanges(e, ctid) {
-    let type =
-      e.target.parentElement.parentElement.childNodes[1].childNodes[0].value;
-    let required =
-      e.target.parentElement.parentElement.childNodes[2].childNodes[2].checked;
-    console.log(required);
-    console.log(type);
-    data[ctid].fields[data[ctid].fields.length - 1] = {
-      fieldName: "asdsada",
+  function saveNewFieldChanges(ctid) {
+    let fields=$("#fieldsTable").children().children()
+    console.log(fields[0].childNodes[2])
+    let editedFieldCount=0
+    fields.map((idx)=>{
+      if (idx > 0){
+      let name=fields[idx].childNodes[0].childNodes[0].value;
+      if (name.length==0) {editedFieldCount = 1;}
+      let type =Number(fields[idx].childNodes[1].childNodes[0].value);
+      let required =fields[idx].childNodes[2].childNodes[2].checked;
+																																			
+						  
+      console.log(name+type+required)
+      data[ctid].fields[idx-1] = {
+      fieldName: name,
       fieldType: type,
       mandatory: required,
-    };
+    }};
+    }) 
+    if(editedFieldCount>0){$("#saveField").addClass("disabled");}
+    else{$("#saveField").removeClass("disabled");}
     console.log(data[ctid]);
   }
   function removeField(ctid) {
