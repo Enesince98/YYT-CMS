@@ -394,7 +394,7 @@ const Table = (props) => {
           Save
         </button>
       </div>
-      <div className={`container ${editSection.length === 0 ? "" : "d-none"}`}>
+      <div className={`container d-flex justify-content-center ${editSection.length === 0 ? "" : "d-none"}`}>
         <nav>
           <ul class="pagination">
             <li

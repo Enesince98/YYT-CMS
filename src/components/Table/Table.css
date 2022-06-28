@@ -33,7 +33,7 @@ a {
 
 .pagination {
   display: flex;
-  margin-left: 10rem;
+
 }
 .pagination {
   padding: 30px 0;
@@ -150,14 +150,14 @@ a {
   width: 1000px;
   margin-right: 286px;
   background-color: #202327;
-  margin-left: 250px;
+
 }
 
 .PaginationContainerLight {
   width: 1000px;
   margin-right: 286px;
   background-color: #fff;
-  margin-left: 250px;
+
 }
 
 .btn-1 {
