@@ -72,6 +72,8 @@ const ContentTypeManager = () => {
 				progress: undefined,
 				});
 				setFields([])
+				setShowNext(false);
+				setUrl("https://localhost:44325/api/ContentTypes")
 			  
 		}
 		catch(err) {
