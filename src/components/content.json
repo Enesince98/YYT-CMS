@@ -1,0 +1,25 @@
+{
+    "content": {
+        "_id":  "62b494f17d617c437f469e7f",
+        "Content": {
+          "test":  "123"
+        },
+        "ContentTypeId": "62b431d9dd296686d28eee5f",
+        "IsPublished": true,
+        "Version": 0
+    },
+    "fields": [
+        {
+            "id": "50f7d33f-4494-4131-a219-03c4da08191c",
+            "fieldName": "body",
+            "fieldType": 0,
+            "mandatory": true
+        },
+        {
+            "id": "41d049bd-72a5-4c43-a8fa-489ff11ec41c",
+            "fieldName": "title",
+            "fieldType": 0,
+            "mandatory": true
+        }
+    ]
+  }
