@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { useTheme } from "../../context/ThemeContext";
 
 import $ from "jquery";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -21,6 +22,9 @@ const Table = (props) => {
   const [data, setData] = useState([]); // API den gelen response içindeki datayı tutmamıza yarayan değişken. Veri geldiğinde tablonun güncellenmesi için state içinde tutuluyor.
   const [count, setCount] = useState();
   // API den gelen response içindeki data miktarını tutan değişkendir.
+
+  const { theme, setTheme } = useTheme();
+
   useEffect(() => {
     setUrl(props.url + "?offset=" + page + "&limit=" + rowCount); //Page değişkeni değiştiğinde yani önceki/sonraki sayfaya geçilmek istendiğinde url içini yeni sayfa numarasına göre günceller.
   }, [page, rowCount]);
@@ -96,9 +100,9 @@ const Table = (props) => {
                           defaultValue={value["fieldName"]}
                           key={value["fieldName"]}
                           onBlur={(e) => saveEditedField(e, ctid - 1)}
+                          className="inputTable"
                         />
                       </td>
-                      
 
                       <td>
                         <select
@@ -110,26 +114,10 @@ const Table = (props) => {
                             value["fieldName"].length == 0 ? "" : "disabled"
                           }
                         >
-                          <option
-                            value="0"
-                          >
-                            String
-                          </option>
-                          <option
-                            value="1"
-                          >
-                            Number
-                          </option>
-                          <option
-                            value="2"
-                          >
-                            Boolean
-                          </option>
-                          <option
-                            value="3"
-                          >
-                            Date
-                          </option>
+                          <option value="0">String</option>
+                          <option value="1">Number</option>
+                          <option value="2">Boolean</option>
+                          <option value="3">Date</option>
                         </select>
                       </td>
                       <td>
@@ -165,11 +153,15 @@ const Table = (props) => {
             </div>
           </div>
           <div className="container-fluid d-flex justify-content-around">
-            <Button id="saveField" onClick={sendEditedData}>
+            <button id="saveField" onClick={sendEditedData} className="btn-3">
               Save
-            </Button>
-            <Button onClick={() => addField(ctid - 1)}>Add new field</Button>
-            <Button onClick={() => setEditSection([])}>Go back</Button>
+            </button>
+            <button onClick={() => addField(ctid - 1)} className="btn-3">
+              Add new field
+            </button>
+            <button onClick={() => setEditSection([])} className="btn-3">
+              Go back
+            </button>
           </div>
         </div>
       );
@@ -394,9 +386,13 @@ const Table = (props) => {
             )}
           </div>
         </div>
-        <Button id="saveCTbtn" className="disabled" onClick={sendEditedData}>
+        <button
+          id="saveCTbtn"
+          className="disabled btn-1"
+          onClick={sendEditedData}
+        >
           Save
-        </Button>
+        </button>
       </div>
       <div className={`container ${editSection.length === 0 ? "" : "d-none"}`}>
         <nav>

@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@600&display=swap");
+
+* {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+.btn-2 {
+  width: 300px;
+  height: 75px;
+  border: none;
+  color: white;
+  border-radius: 20px;
+  transition: ease-out 0.1s;
+  font-size: 1.5rem;
+  outline: none;
+  letter-spacing: 1px;
+  margin-bottom: 5rem;
+  position: relative;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.537);
+}
+
+.btn-2:hover {
+  cursor: pointer;
+}
+
+.btn-2:before {
+  transition: 0.5s all ease;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: 50%;
+  bottom: 0;
+  opacity: 0;
+  content: "";
+  background-color: black;
+  border-radius: 20px;
+}
+
+.btn-2:hover:before {
+  transition: 0.5s all ease;
+  left: 0;
+  right: 0;
+  opacity: 1;
+  z-index: -1;
+}
+
+.ContentTypeContainerBoxLight {
+  width: 1000px;
+  margin-top: 50px;
+  background-color: #fff;
+  margin-left: 250px;
+  border-radius: 10px;
+  box-shadow: 7px 7px 15px -1px rgba(0, 0, 0, 0.63);
+}
+
+.btn-6 {
+  border-radius: 4px;
+  background-color: #f4511e;
+  border: none;
+  color: #ffffff;
+  text-align: center;
+  font-size: 14px;
+  padding: 20px;
+  width: 200px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+  margin-bottom: 50px;
+  margin-left: 15px;
+}
+
+.btn-6 span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.btn-6 span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.btn-6:hover span {
+  padding-right: 25px;
+}
+
+.btn-6:hover span:after {
+  opacity: 1;
+  right: 0;
+}
