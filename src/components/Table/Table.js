@@ -406,7 +406,11 @@ const Table = (props) => {
                             }
                             class="btn btn-danger"
                           >
-                            <i class="far fa-trash-alt"></i>
+                            <i class="far fa-trash-alt" onClick={(e) =>
+                              removeContentType(
+                                e.target.parentElement.parentElement.parentElement.rowIndex
+                              )
+                            } ></i>
                           </button>
                         </td>
                       </tr>
