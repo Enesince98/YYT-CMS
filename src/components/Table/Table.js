@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import axios from "../../api/axios";
 import "./Table.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -369,7 +369,23 @@ const Table = (props) => {
                             </InputGroup.Text>
                           </InputGroup>
                         </td>
-                        <td className="d-flex justify-content-evenly">
+                        <td className="d-flex justify-content-between">
+                        <Link to="/contents"> 
+                        <button
+                            type="button"
+                            onClick={(e) =>
+                              showContentType(
+                                e.target.parentElement.parentElement.rowIndex
+                              )
+                            }
+                            class="btn btn-success"
+                          >
+                            <i class="far fa-eye" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i>
+                            
+                          
+                          </button>
+                         </Link>
+                         
                           <button
                             type="button"
                             onClick={(e) =>
@@ -379,7 +395,7 @@ const Table = (props) => {
                             }
                             class="btn btn-primary"
                           >
-                            <i class="far fa-eye"></i>
+                            <i class="far fa-edit" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i>
                           </button>
                           <button
                             type="button"
