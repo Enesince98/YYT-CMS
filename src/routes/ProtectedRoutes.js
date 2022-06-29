@@ -40,7 +40,6 @@ function ProtectedRoutes() {
             />
             <Route path="contents/*" element={<Contents />} />
             <Route path="user-manager" element={<UserManager />} />
-            <Route path="users" element={<User />} />
           </Route>
 
           {/* catch all */}

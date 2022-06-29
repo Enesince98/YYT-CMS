@@ -15,7 +15,6 @@ const Header = () => {
   }
 
   const { theme, setTheme } = useTheme();
-  console.log(theme);
 
   function changeTheme() {
     setTheme(theme === "light" ? "dark" : "light");
@@ -54,7 +53,7 @@ const Header = () => {
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/users" className="nav-linkk">
+            <Link to="/user-manager" className="nav-linkk">
               Users
             </Link>
           </li>
