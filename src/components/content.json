@@ -11,26 +11,26 @@
     "fields": [
         {
             "id": "50f7d33f-4494-4131-a219-03c4da08191c",
-            "fieldName": "price",
-            "fieldType": 0,
-            "mandatory": true
-        },
-        {
-            "id": "41d049bd-72a5-4c43-a8fa-489ff11ec41c",
             "fieldName": "title",
             "fieldType": 1,
             "mandatory": true
         },
         {
             "id": "41d049bd-72a5-4c43-a8fa-489ff11ec41c",
-            "fieldName": "inStock",
-            "fieldType": 3,
+            "fieldName": "price",
+            "fieldType": 0,
             "mandatory": true
         },
         {
             "id": "41d049bd-72a5-4c43-a8fa-489ff11ec41c",
             "fieldName": "releaseDate",
             "fieldType": 2,
+            "mandatory": true
+        },
+        {
+            "id": "41d049bd-72a5-4c43-a8fa-489ff11ec41c",
+            "fieldName": "inStock",
+            "fieldType": 3,
             "mandatory": true
         }
     ]

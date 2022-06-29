@@ -20,18 +20,21 @@ const Contents = () => {
     });
   };
   readData();},[]);
-function addContent(){
-  newContent.fields.map((field)=>{
+function addContent(e){
+  let row = {};
+  if (e) {row = Object.values(data[e.target.parentElement.parentElement.rowIndex])
+  console.log(Object.values(row))}
+  newContent.fields.map((field,idx)=>{
     let inputType;
     switch(field.fieldType){
       case 0:
-        inputType=(<Form.Control type="number"/>)
+        inputType=(<Form.Control value = {row[idx]} type="number"/>)
         break;
       case 1:
-        inputType=(<Form.Control type="text"/>)
+        inputType=(<Form.Control value = {row[idx]} type="text"/>)
       break;
       case 2:
-        inputType=(<Form.Control type="date"/>)
+        inputType=(<Form.Control value = {row[idx]} type="date"/>)
       break;
       case 3:
         inputType=(<Form.Select>
@@ -61,6 +64,7 @@ function addContent(){
                 {Object.keys(data[0]).map((value) => (
                   <th>{value}</th>
                 ))}
+                <th>Actions</th>
               </thead>
               <tbody>
                 {data.map((value) => (
@@ -69,6 +73,10 @@ function addContent(){
                       <td>{v}</td>
                     ))}
                     {/* satıra tıklandığında seçili girdi için eğer alt tablo varsa onun gösterildiği tablo sayfası açılır.  */}
+                  <td className="d-flex"><button className="btn btn-danger"><i class="far fa-trash-alt"></i></button>
+                  <button className="btn btn-success"
+                          onClick={(e) => (setShow(!show), addContent(e))}><i class="far fa-edit"></i></button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
