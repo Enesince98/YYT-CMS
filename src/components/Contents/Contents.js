@@ -23,23 +23,24 @@ const Contents = () => {
 function addContent(e){
   let row = {};
   if (e) {row = Object.values(data[e.target.parentElement.parentElement.rowIndex])
-  console.log(Object.values(row))}
+  console.log(row[1])
+  }
   newContent.fields.map((field,idx)=>{
     let inputType;
     switch(field.fieldType){
       case 0:
-        inputType=(<Form.Control value = {row[idx]} type="number"/>)
+        inputType=(<Form.Control value = {row[1]} type="number"/>)
         break;
       case 1:
-        inputType=(<Form.Control value = {row[idx]} type="text"/>)
+        inputType=(<Form.Control value = {row[0]} type="text"/>)
       break;
       case 2:
-        inputType=(<Form.Control value = {row[idx]} type="date"/>)
+        inputType=(<Form.Control value = {row[2]?.split("T")[0]} onChange={(e)=> console.log(e.target.value)} type="date"/>)
       break;
       case 3:
         inputType=(<Form.Select>
-                      <option>True</option>
-                      <option>False</option>
+                      <option value = "True">doru</option>
+                      <option value = "False" selected>yanlis</option>
                     </Form.Select>)
       break;
     }
