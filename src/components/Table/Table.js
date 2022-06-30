@@ -312,7 +312,7 @@ const Table = (props) => {
                 <tbody>
                   {data.map(
                     (
-                      value //data değişkeni içerisinde responsedaki tablo girdi verileri bulunur. Bu verilerdeki her bir girdi için yeni bir satır oluşturulur.
+                      value,idx //data değişkeni içerisinde responsedaki tablo girdi verileri bulunur. Bu verilerdeki her bir girdi için yeni bir satır oluşturulur.
                     ) => (
                       <tr>
                         {" "}
@@ -369,7 +369,10 @@ const Table = (props) => {
                             }
                             class="btn btn-primary"
                           >
-                            <i class="far fa-edit" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i>
+                            <Link to={"/content-type/"+value.id}>
+                            <i class="far fa-edit"/>
+                            </Link>
+                            {/* <i class="far fa-edit" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i> */}
                           </button>
                           <button
                             type="button"
