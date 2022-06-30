@@ -257,28 +257,28 @@ const Table = (props) => {
 
       console.log(value);
 
-      // try {
-      //   const response = await axios.put(
-      //     "https://localhost:44325/api/ContentTypes",
-      //     value,
-      //     {
-      //       headers: { "Content-Type": "application/json" },
-      //       withCredentials: true,
-      //     }
-      //   );
+      try {
+        const response = await axios.put(
+          "https://localhost:44325/api/ContentTypes",
+          value,
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
           
 
-      // } catch (error) {
-      //   toast.error(error, {
-      //     position: "bottom-right",
-      //     autoClose: 2000,
-      //     hideProgressBar: false,
-      //     closeOnClick: true,
-      //     pauseOnHover: true,
-      //     draggable: true,
-      //     progress: undefined,
-      //   });
-      // }
+      } catch (error) {
+        toast.error(error, {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     });
     setPage(0);
   };
@@ -344,36 +344,23 @@ const Table = (props) => {
                         {Object.values(value)[3].length}
                         </td>
                         <td className="d-flex justify-content-between">
-                        <Link to="/contents"> 
+                        <Link to={"/contents/"+value.id}> 
                         <button
                             type="button"
-                            onClick={(e) =>
-                              showContentType(
-                                e.target.parentElement.parentElement.rowIndex
-                              )
-                            }
                             class="btn btn-success"
                           >
-                            <i class="far fa-eye" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i>
-                            
-                          
+                            <i class="far fa-eye"/>
+
                           </button>
                          </Link>
-                         
+                         <Link to={"/content-type/"+value.id}>
                           <button
                             type="button"
-                            onClick={(e) =>
-                              showContentType(
-                                e.target.parentElement.parentElement.rowIndex
-                              )
-                            }
                             class="btn btn-primary"
                           >
-                            <Link to={"/content-type/"+value.id}>
                             <i class="far fa-edit"/>
-                            </Link>
-                            {/* <i class="far fa-edit" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i> */}
-                          </button>
+                            </button>
+                          </Link>
                           <button
                             type="button"
                             onClick={(e) =>
