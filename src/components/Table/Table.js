@@ -3,15 +3,18 @@ import { useState, useEffect } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import axios from "../../api/axios";
 import "./Table.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-
 import $ from "jquery";
 import InputGroup from "react-bootstrap/InputGroup";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+
+
+
 const Table = (props) => {
   const axiosPrivate = useAxiosPrivate();
   const [editSection, setEditSection] = useState([]);
@@ -80,7 +83,7 @@ const Table = (props) => {
           <h4>{data[ctid - 1].description}</h4>
           <div class="row">
             <div class="table-responsive">
-              <table class="table table-bordered">
+            <table id="fieldsTable" class="table table-bordered">
                 <tbody id="fields">
                   <tr>
                     <th>Name</th>
@@ -95,14 +98,14 @@ const Table = (props) => {
                           type="text"
                           defaultValue={value["fieldName"]}
                           key={value["fieldName"]}
-                          onBlur={(e) => saveEditedField(e, ctid - 1)}
+                          onBlur={() => {saveNewFieldChanges(ctid - 1)}}
                         />
                       </td>
                       
 
                       <td>
                         <select
-                          onChange={(e) => saveNewFieldChanges(e, ctid - 1)}
+                          onChange={() => saveNewFieldChanges(ctid - 1)}
                           id="cars"
                           name="cars"
                           defaultValue={value["fieldType"]}
@@ -142,7 +145,7 @@ const Table = (props) => {
                             value["mandatory"] == null ? "" : "disabled"
                           }
                           defaultChecked={value["mandatory"] ? "checked" : ""}
-                          onChange={(e) => saveNewFieldChanges(e, ctid - 1)}
+                          onChange={() => saveNewFieldChanges(ctid - 1)}
                         />
                       </td>
                       <td>
@@ -165,7 +168,7 @@ const Table = (props) => {
             </div>
           </div>
           <div className="container-fluid d-flex justify-content-around">
-            <Button id="saveField" onClick={sendEditedData}>
+            <Button id="saveField" className="disabled" onClick={sendEditedData}>
               Save
             </Button>
             <Button onClick={() => addField(ctid - 1)}>Add new field</Button>
@@ -176,18 +179,27 @@ const Table = (props) => {
       setEditSection(editingRow);
     }
   }
-  function saveNewFieldChanges(e, ctid) {
-    let type =
-      e.target.parentElement.parentElement.childNodes[1].childNodes[0].value;
-    let required =
-      e.target.parentElement.parentElement.childNodes[2].childNodes[2].checked;
-    console.log(required);
-    console.log(type);
-    data[ctid].fields[data[ctid].fields.length - 1] = {
-      fieldName: "asdsada",
+  function saveNewFieldChanges(ctid) {
+    let fields=$("#fieldsTable").children().children()
+    console.log(fields[0].childNodes[2])
+    let editedFieldCount=0
+    fields.map((idx)=>{
+      if (idx > 0){
+      let name=fields[idx].childNodes[0].childNodes[0].value;
+      if (name.length==0) {editedFieldCount = 1;}
+      let type =Number(fields[idx].childNodes[1].childNodes[0].value);
+      let required =fields[idx].childNodes[2].childNodes[2].checked;
+																																			
+						  
+      console.log(name+type+required)
+      data[ctid].fields[idx-1] = {
+      fieldName: name,
       fieldType: type,
       mandatory: required,
-    };
+    }};
+    }) 
+    if(editedFieldCount>0){$("#saveField").addClass("disabled");}
+    else{$("#saveField").removeClass("disabled");}
     console.log(data[ctid]);
   }
   function removeField(ctid) {
@@ -233,61 +245,40 @@ const Table = (props) => {
       console.log(data[idx]);
     } else {
       alert("Enter A valid value to enable save button!");
-      e.target.value = e.target.defaultValue;
+      e.target.value = ""
       $("#saveCTbtn").addClass("disabled");
     }
   }
-  function saveEditedField(e, ctid) {
-    if (e.target.value.length > 0) {
-      if (e.target.value === e.target.defaultValue) {
-        $("#saveField").addClass("disabled");
-      } else {
-        $("#saveField").removeClass("disabled");
-      }
-      let a = $("#fields").children();
-      let idx = e.target.parentElement.parentElement.rowIndex - 1;
-      console.log($("#fields").children());
-      let newFieldValue = a[idx + 1].childNodes[0].childNodes[0].value;
-      data[ctid].fields[idx].fieldName = newFieldValue;
-      console.log(data[ctid]);
-    } else {
-      alert("Enter A valid value to enable save button!");
-      e.target.value = e.target.defaultValue;
-      $("#saveField").addClass("disabled");
-    }
-  }
+
   const sendEditedData = (e) => {
     e.preventDefault();
     data.map(async (value) => {
-      try {
-        const response = await axios.put(
-          "https://localhost:44325/api/ContentTypes",
-          value,
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        );
-        toast.success("Changes are succesfully saved.", {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } catch (error) {
-        toast.error(error, {
-          position: "bottom-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      }
+
+
+      console.log(value);
+
+      // try {
+      //   const response = await axios.put(
+      //     "https://localhost:44325/api/ContentTypes",
+      //     value,
+      //     {
+      //       headers: { "Content-Type": "application/json" },
+      //       withCredentials: true,
+      //     }
+      //   );
+          
+
+      // } catch (error) {
+      //   toast.error(error, {
+      //     position: "bottom-right",
+      //     autoClose: 2000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //   });
+      // }
     });
     setPage(0);
   };
@@ -327,11 +318,7 @@ const Table = (props) => {
                         {" "}
                         {/* satıra tıklandığında seçili girdi için eğer alt tablo varsa onun gösterildiği tablo sayfası açılır.  */}
                         <td>
-                          <InputGroup className="mb-3">
-                            <InputGroup.Text id="uid">
-                              {Object.values(value)[0]}
-                            </InputGroup.Text>
-                          </InputGroup>
+                        {Object.values(value)[0]}
                         </td>
                         <td>
                           <InputGroup className="mb-3">
@@ -339,7 +326,7 @@ const Table = (props) => {
                               className="js-name"
                               defaultValue={Object.values(value)[1]}
                               key={Object.values(value)[1]}
-                              onBlur={updateData}
+                              onChange={updateData}
                             />
                           </InputGroup>
                         </td>
@@ -349,18 +336,30 @@ const Table = (props) => {
                               className="js-description"
                               defaultValue={Object.values(value)[2]}
                               key={Object.values(value)[1]}
-                              onBlur={updateData}
+                              onChange={updateData}
                             />
                           </InputGroup>
                         </td>
                         <td>
-                          <InputGroup className="mb-3">
-                            <InputGroup.Text>
-                              {Object.values(value)[3].length}
-                            </InputGroup.Text>
-                          </InputGroup>
+                        {Object.values(value)[3].length}
                         </td>
-                        <td className="d-flex justify-content-evenly">
+                        <td className="d-flex justify-content-between">
+                        <Link to="/contents"> 
+                        <button
+                            type="button"
+                            onClick={(e) =>
+                              showContentType(
+                                e.target.parentElement.parentElement.rowIndex
+                              )
+                            }
+                            class="btn btn-success"
+                          >
+                            <i class="far fa-eye" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i>
+                            
+                          
+                          </button>
+                         </Link>
+                         
                           <button
                             type="button"
                             onClick={(e) =>
@@ -370,7 +369,7 @@ const Table = (props) => {
                             }
                             class="btn btn-primary"
                           >
-                            <i class="far fa-eye"></i>
+                            <i class="far fa-edit" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i>
                           </button>
                           <button
                             type="button"
@@ -381,7 +380,11 @@ const Table = (props) => {
                             }
                             class="btn btn-danger"
                           >
-                            <i class="far fa-trash-alt"></i>
+                            <i class="far fa-trash-alt" onClick={(e) =>
+                              removeContentType(
+                                e.target.parentElement.parentElement.parentElement.rowIndex
+                              )
+                            } ></i>
                           </button>
                         </td>
                       </tr>
