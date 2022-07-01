@@ -11,6 +11,7 @@ import Contents from "./components/Contents/Contents";
 import UserManager from "./components/UserManager/UserManager";
 import Table from "./components/Table/Table";
 import Header from './components/Header/Header.jsx'
+import ContentTypeFields from "./components/ContentTypeFields/ContentTypeFields";
 
 /*const ROLES = {
   User: 2001,
@@ -33,6 +34,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="content-type-builder" element={<ContentTypeBuilder />} />
           <Route path="content-type-manager/*" element={<ContentTypeManager />}/>
+          <Route path="content-type/*" element={<ContentTypeFields/>} />
           <Route path="contents/*" element={<Contents />} />
           <Route path="user-manager" element={<UserManager />} />
         </Route>
