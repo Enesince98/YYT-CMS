@@ -344,19 +344,19 @@ const Table = (props) => {
                         {Object.values(value)[3].length}
                         </td>
                         <td className="d-flex justify-content-between">
-                        <Link to={"/contents/"+value.id}> 
+                        <Link to={"/contents/"+(Object.values(value)[1])+"/"+(idx+2)}> 
                         <button
                             type="button"
-                            class="btn btn-success"
+                            class="btn btn-success me-3"
                           >
                             <i class="far fa-eye"/>
 
                           </button>
                          </Link>
-                         <Link to={"/content-type/"+value.id}>
+                         <Link to={"/content-type/"+(idx+2)}>
                           <button
                             type="button"
-                            class="btn btn-primary"
+                            class="btn btn-primary me-3"
                           >
                             <i class="far fa-edit"/>
                             </button>
