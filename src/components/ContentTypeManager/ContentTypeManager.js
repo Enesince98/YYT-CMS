@@ -6,34 +6,55 @@ import {
 	Form,
 	ToggleButton,
 	ButtonGroup,
+	Spinner
 } from "react-bootstrap";
 import Header from "../Header/Header.jsx";
-import axios from 'axios'
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-
-
-
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import axios from "../../api/axios";
+import { useNavigate,Link } from "react-router-dom";
+import {successToast, errorToast} from "../../Toasts"
 const ContentTypeManager = () => {
+	const axiosPrivate = useAxiosPrivate();
 	const [show, setShow] = useState(false);
 	const [showNext, setShowNext] = useState(false);
 	const [url,setUrl] = useState("https://localhost:44325/api/ContentTypes")
 	const [contentName, setContentName] = useState("");
 	const [contentDescription, setContentDescription] = useState("");
 	const [contentType, setContentType] = useState();
-
+	const [data, setData] = useState(); // API den gelen response içindeki datayı tutmamıza yarayan değişken. Veri geldiğinde tablonun güncellenmesi için state içinde tutuluyor.
+	const [count, setCount] = useState();
 	const [fields,setFields] = useState([])
 	const [fieldName,setFieldName] = useState('');
 	const [radioValue,setRadioValue] = useState('')
 	const [mandatory,setMandatory] = useState(false);
+	const [form, setForm] = useState([]);
 	//field name textboxı boşsa veya radio button seçilmemişse butonları disable et.
 	//add fielda tıklanınca ekranı boşalt. ehe
+	function capitalize(string){
+		return string.trim().replace(/^\w/, (c) => c.toUpperCase())
+	  }
+	const readData = async () => {
+		try{
+		await axiosPrivate.get("https://localhost:44325/api/ContentTypes").then(function (response) {
+			//Genel bir async api isteği işlemidir. Gelen veriyi stateler içinde tutar
+			setData(response.data.data.contentTypes); //useEffect ile url değiştikçe yeniden istek atılması sağlanır.
+			setCount(response.data.data.totalCount);
+		  });}
+		  catch (err) {
+			errorToast(err)
+		}
+	  };
+	  useEffect(() => {
+		readData();
+	  }, []);
 	
 
 	
-	useEffect(()=> {
-		console.log(radioValue)
-	},[radioValue])
+	// useEffect(()=> {
+	// 	console.log(radioValue)
+	// },[radioValue])
 
 
   function loadNext() {
@@ -48,9 +69,6 @@ const ContentTypeManager = () => {
 			description:contentDescription,
 			fields
 		});
-
-		console.log(fields);
-
 		try {
 			const response = await axios.post('https://localhost:44325/api/ContentTypes',{
 				name: contentName,
@@ -62,30 +80,14 @@ const ContentTypeManager = () => {
 				withCredentials: true,
 			  });
 			  setContentType()
-			  toast.success('Content Type added successfully !', {
-				position: "bottom-right",
-				autoClose: 2000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				});
+			  successToast("Content Type added successfully !")
 				setFields([])
 				setShowNext(false);
 				setUrl("https://localhost:44325/api/ContentTypes")
 			  
 		}
 		catch(err) {
-			toast.error(err, {
-				position: "bottom-right",
-				autoClose: 2000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				});
+			errorToast(err)
 		}
 
 	}
@@ -102,76 +104,137 @@ const ContentTypeManager = () => {
 		setFieldName('');
 		setRadioValue('');
 		setMandatory(false);
-		toast.success('Field added succesfully !', {
-			position: "bottom-right",
-			autoClose: 2000,
-			hideProgressBar: false,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			});
+		successToast('Field added succesfully !')
 	}
+
+	function editContentType(contentTypeInfo){
+		form.push(<Form>
+			<Form.Group className="mb-3" >
+				<Form.Label>Content Type Name</Form.Label>
+				<Form.Control
+					type="text"
+					value = {contentTypeInfo?.name}
+					placeholder="Enter content type name"
+					id="contentName"
+					autoFocus
+					onBlur={(e)=> setContentName(e.target.value)}
+				/>
+			</Form.Group>
+			<Form.Group className="mb-3" >
+				<Form.Label>Content Type Description</Form.Label>
+				<Form.Control
+					type="text"
+					value = {contentTypeInfo?.description}
+					id="contentDescription"
+					placeholder="Enter content type description"
+					autoFocus
+					onBlur={(e) => setContentDescription(e.target.value)}
+				/>
+			</Form.Group>
+			<Modal.Footer>
+				<Button variant="secondary" onClick={() => (setShow(prev => !prev), setForm([]))}>
+					Close
+				</Button>
+				<Button
+					variant="primary"
+					onClick={contentTypeInfo?.name ? (()=> (handleSubmit(), setShow(prev => !prev), setForm([]))):loadNext}
+				>
+					{contentTypeInfo?.name ? "Submit":"Next"}
+				</Button>
+			</Modal.Footer>
+		</Form>)
+		if (typeof(contentTypeInfo) === "undefined"){
+		}
+		console.log(form);
+		console.log(contentTypeInfo)
+	}
+
 
 	return (
 		<div>
-			<ToastContainer
-			position="bottom-right"
-			autoClose={2000}
-			hideProgressBar={false}
-			newestOnTop={false}
-			closeOnClick
-			rtl={false}
-			pauseOnFocusLoss
-			draggable
-			pauseOnHover
-			limit={5}
-			/>		
+			<ToastContainer/>		
 			<Header />
-			<Button onClick={() => setShow(true)}>New Content Type</Button>
 			{/*<Table url = 'https://localhost:44325/api/ContentTypes' isParent = {true} whoseParent = "contents"/>*/}
-			<Table url={url} isParent={false} />
+			<div className="container">
+        <div className="row">
+        <h1 className="mt-5">{`Content Types`}</h1>
+        <div class="table-responsive">
+        <Button className="mb-4 float-end" onClick={() => (setShow(true), editContentType())}>
+          New Content Type
+        </Button>
+          {data ? (
+            <table className="table table-bordered">
+              <thead>
+                {Object.keys(data[0]).map((value) => (
+					
+                  <th>{capitalize(value)}</th>
+                ))}
+                <th>Actions</th>
+              </thead>
+              <tbody>
+                {data.map((value,idx) => (
+                  <tr>
+                    {Object.values(value).map((v) => (
+                      <td>
+					  {typeof(v)==="object"? v.length:v}
+                    </td>
+                    ))}
+                    {/* satıra tıklandığında seçili girdi için eğer alt tablo varsa onun gösterildiği tablo sayfası açılır.  */}
+                    <td className="d-flex justify-content-around">
+					<Link to={"/contents/"+(Object.values(value)[1])+"/"+(idx+2)}> 
+                        <button
+                            type="button"
+                            class="btn btn-success me-3"
+                          >
+                            <i class="far fa-eye"/>
 
-			<Modal show={show} onHide={() => setShow(!show)} centered>
+                          </button>
+                         </Link>
+						 <Link to={"/content-type/"+(idx+2)}>
+                          <button
+                            type="button"
+                            class="btn btn-primary me-3"
+                          >
+                            <i class="far fa-edit"/>
+                            </button>
+                          </Link>
+						  <button type="button" className="btn btn-warning" onClick={() => (setShow(true), editContentType(value))}>
+						  <i class="fa-solid fa-spell-check" onClick={() => (()=>setShow(true), editContentType(value))}/>
+						  </button>
+						  <button
+                            type="button"
+                            onClick={(e) =>
+                              removeContentType(
+                                e.target.parentElement.parentElement.rowIndex
+                              )
+                            }
+                            class="btn btn-danger"
+                          >
+                            <i class="far fa-trash-alt" onClick={(e) =>
+                              removeContentType(
+                                e.target.parentElement.parentElement.parentElement.rowIndex
+                              )
+                            } ></i>
+                          </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <Spinner animation="grow" />
+          )}
+        </div>
+        </div>
+     
+      </div>
+
+			<Modal show={show} onHide={() => (setShow(prev => !prev), setForm([]))} centered>
 				<Modal.Header closeButton>
 					<Modal.Title>New Content Type</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					<Form>
-						<Form.Group className="mb-3" >
-							<Form.Label>Content Name</Form.Label>
-							<Form.Control
-								type="text"
-								placeholder="Enter content name"
-                id="contentName"
-								autoFocus
-								onBlur={(e)=> setContentName(e.target.value)}
-								
-							/>
-						</Form.Group>
-
-						<Form.Group className="mb-3" >
-							<Form.Label>Content Description</Form.Label>
-							<Form.Control
-								type="text"
-                id="contentDescription"
-								placeholder="Enter content description"
-								autoFocus
-								onBlur={(e) => setContentDescription(e.target.value)}
-							/>
-						</Form.Group>
-						<Modal.Footer>
-							<Button variant="secondary" onClick={() => setShow(!show)}>
-								Close
-							</Button>
-							<Button
-								variant="primary"
-								onClick={loadNext}
-							>
-								Next
-							</Button>
-						</Modal.Footer>
-					</Form>
+					{form}
 				</Modal.Body>
 			</Modal>
 
@@ -237,7 +300,7 @@ const ContentTypeManager = () => {
 							Submit
 							</Button>		
 							) : (
-								<Button variant="success"  onClick={handleSubmit} >
+								<Button variant="success"  onClick={()=> (handleSubmit(), setForm([]),setShow(prev => !prev))} >
 								Submit
 								</Button>	
 							) }

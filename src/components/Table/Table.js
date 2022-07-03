@@ -257,28 +257,28 @@ const Table = (props) => {
 
       console.log(value);
 
-      // try {
-      //   const response = await axios.put(
-      //     "https://localhost:44325/api/ContentTypes",
-      //     value,
-      //     {
-      //       headers: { "Content-Type": "application/json" },
-      //       withCredentials: true,
-      //     }
-      //   );
+      try {
+        const response = await axios.put(
+          "https://localhost:44325/api/ContentTypes",
+          value,
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
           
 
-      // } catch (error) {
-      //   toast.error(error, {
-      //     position: "bottom-right",
-      //     autoClose: 2000,
-      //     hideProgressBar: false,
-      //     closeOnClick: true,
-      //     pauseOnHover: true,
-      //     draggable: true,
-      //     progress: undefined,
-      //   });
-      // }
+      } catch (error) {
+        toast.error(error, {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     });
     setPage(0);
   };
@@ -312,7 +312,7 @@ const Table = (props) => {
                 <tbody>
                   {data.map(
                     (
-                      value //data değişkeni içerisinde responsedaki tablo girdi verileri bulunur. Bu verilerdeki her bir girdi için yeni bir satır oluşturulur.
+                      value,idx //data değişkeni içerisinde responsedaki tablo girdi verileri bulunur. Bu verilerdeki her bir girdi için yeni bir satır oluşturulur.
                     ) => (
                       <tr>
                         {" "}
@@ -344,33 +344,23 @@ const Table = (props) => {
                         {Object.values(value)[3].length}
                         </td>
                         <td className="d-flex justify-content-between">
-                        <Link to="/contents"> 
+                        <Link to={"/contents/"+(Object.values(value)[1])+"/"+(idx+2)}> 
                         <button
                             type="button"
-                            onClick={(e) =>
-                              showContentType(
-                                e.target.parentElement.parentElement.rowIndex
-                              )
-                            }
-                            class="btn btn-success"
+                            class="btn btn-success me-3"
                           >
-                            <i class="far fa-eye" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i>
-                            
-                          
+                            <i class="far fa-eye"/>
+
                           </button>
                          </Link>
-                         
+                         <Link to={"/content-type/"+(idx+2)}>
                           <button
                             type="button"
-                            onClick={(e) =>
-                              showContentType(
-                                e.target.parentElement.parentElement.rowIndex
-                              )
-                            }
-                            class="btn btn-primary"
+                            class="btn btn-primary me-3"
                           >
-                            <i class="far fa-edit" onClick={(e) => showContentType(e.target.parentElement.parentElement.parentElement.rowIndex) }></i>
-                          </button>
+                            <i class="far fa-edit"/>
+                            </button>
+                          </Link>
                           <button
                             type="button"
                             onClick={(e) =>
