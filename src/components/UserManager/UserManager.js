@@ -4,7 +4,7 @@ import { Button, Modal, Form, Spinner } from "react-bootstrap";
 import Header from "../Header/Header.jsx";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import {successToast, errorToast} from "../../Toasts"
 const UserManager = () => {
 	const [data, setData] = useState();
 	const [editUser, setEditUser] = useState();
@@ -36,60 +36,21 @@ const UserManager = () => {
 						password,
 					}
 				);
-				toast.success("User added successfully !", {
-					position: "bottom-right",
-					autoClose: 2000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-				});
+				successToast("User added successfully !");
+				setNewUserModal(false);
 				readData();
 			} catch (err) {
-				toast.error(err, {
-					position: "bottom-right",
-					autoClose: 2000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-				});
+				errorToast(err)
 			}
 		} else if(userName == '' ) {
-      toast.error("User name can not be empty", {
-        position: "bottom-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+			errorToast("User name can not be empty");
     }  else if(password.length ==0) {
-      toast.error("Password can not be empty", {
-        position: "bottom-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+		errorToast("Password can not be empty");
     } 
     
     
     else{
-			toast.error("Password doesn't match !", {
-				position: "bottom-right",
-				autoClose: 2000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-			});
+		errorToast("Password doesn't match !");
 		}
 
 		setNewUserModal(false);
@@ -106,37 +67,14 @@ const UserManager = () => {
 						password,
 					}
 				);
-				toast.success("User updated successfully !", {
-					position: "bottom-right",
-					autoClose: 2000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-				});
+				successToast("User updated successfully !");
+				setEditUserModal(false);
 				readData();
 			} catch (err) {
-				toast.error(err, {
-					position: "bottom-right",
-					autoClose: 2000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-				});
+				errorToast(err);
 			}
 		} else {
-			toast.error("Password doesn't match !", {
-				position: "bottom-right",
-				autoClose: 2000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-			});
+			errorToast("Password doesn't match !");
 		}
   }
 
@@ -145,26 +83,10 @@ const UserManager = () => {
 			await axios.delete(
 				`https://62a492ef47e6e40063951ec5.mockapi.io/api/users/${id}`
 			);
-			toast.success("User deleted successfully !", {
-				position: "bottom-right",
-				autoClose: 2000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-			});
+			successToast("User deleted successfully !");
 			readData();
 		} catch (err) {
-			toast.error(err, {
-				position: "bottom-right",
-				autoClose: 2000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-			});
+			errorToast(err);
 		}
 	};
 
@@ -340,7 +262,6 @@ const UserManager = () => {
 								</Button>
 								<Button variant="primary" onClick={() =>{
                   editSubmit(editUser.id)
-                  setEditUserModal(false);
                   } }>
 									Submit
 								</Button>
