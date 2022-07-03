@@ -37,8 +37,7 @@ const ContentTypeManager = () => {
 	const [form, setForm] = useState([]);
 	const [limit,setLimit] = useState(4)
 	const [offset,setOffset] = useState(0);
-	//field name textboxı boşsa veya radio button seçilmemişse butonları disable et.
-	//add fielda tıklanınca ekranı boşalt. ehe
+
 
 
 	function capitalize(string){
@@ -88,7 +87,7 @@ const ContentTypeManager = () => {
 			  successToast("Content Type added successfully !")
 				setFields([])
 				setShowNext(false);
-				setUrl("https://localhost:44325/api/ContentTypes")
+				readData()
 			  
 		}
 		catch(err) {
@@ -188,7 +187,7 @@ const ContentTypeManager = () => {
         <Button className="mb-4 float-end" onClick={() => (setShow(true), editContentType())}>
           New Content Type
         </Button>
-          {data ? (
+          { data?.length > 0 ? (
             <table className="table table-bordered">
               <thead>
                 {Object.keys(data[0]).map((value) => (
@@ -263,7 +262,7 @@ const ContentTypeManager = () => {
 				  li.push(<li class={`page-item ${offset == i ? 'active' : ''}`}> <button className="page-link" onClick={() => setOffset(i)}>{i+1}</button> </li>);
 				}
 				return li;
-			  })()
+			})()
 	}
 
 	
@@ -276,20 +275,21 @@ const ContentTypeManager = () => {
 </nav>
 
 
+		</div>
+
+	{/* SELECT LIMIT  */}
+
+	
 <div class="dropdown">
   <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
     Rows
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-    <li className="dropdown-item" onClick={() => setLimit(2)}>2</li>
-    <li className="dropdown-item" onClick={() => setLimit(5)}>5</li>
-    <li className="dropdown-item"onClick={() => setLimit(10)}>10</li>
+    <li className="dropdown-item" onClick={() => {setLimit(2); setOffset(0)} }>2</li>
+    <li className="dropdown-item" onClick={() => {setLimit(5); setOffset(0)} }>5</li>
+    <li className="dropdown-item"onClick={() => {setLimit(10); setOffset(0)} }>10</li>
   </ul>
 </div>
-		</div>
-
-	{/* SELECT LIMIT  */}
-
 
 
 
