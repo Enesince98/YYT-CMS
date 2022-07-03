@@ -15,11 +15,12 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import {successToast, errorToast} from "../../Toasts"
-import { getPaginationItemUtilityClass } from "@mui/material";
+
 
 
 
 const ContentTypeManager = () => {
+	
 	const axiosPrivate = useAxiosPrivate();
 	const [show, setShow] = useState(false);
 	const [showNext, setShowNext] = useState(false);
@@ -45,9 +46,6 @@ const ContentTypeManager = () => {
 	  }
 
 
-	  console.log(Math.floor(count/limit));
-	  console.log(offset);
-
 	const readData = async () => {
 		try{
 		await axiosPrivate.get(`https://localhost:44325/api/ContentTypes?offset=${offset}&limit=${limit}`)
@@ -67,10 +65,6 @@ const ContentTypeManager = () => {
 	  }, [offset,limit]);
 	
 
-	
-	// useEffect(()=> {
-	// 	console.log(radioValue)
-	// },[radioValue])
 
 
   function loadNext() {
@@ -164,10 +158,11 @@ const ContentTypeManager = () => {
 
 
    async function removeContentType(ctid) {
-		let rowidx = ctid - 1;
 		if (ctid) {
+
+			console.log(ctid)
 			try {
-				await axios.delete(`https://localhost:44325/api/contentTypes/${data[rowidx].id}`)
+				await axios.delete(`https://localhost:44325/api/contentTypes/${ctid}`)
 				successToast('Content Type was deleted successfully')
 				readData();
 			}
@@ -176,6 +171,9 @@ const ContentTypeManager = () => {
 			}
 		}
 	  }
+
+
+
 
 
 	return (
@@ -233,16 +231,12 @@ const ContentTypeManager = () => {
                             type="button"
                             onClick={(e) =>
                               removeContentType(
-                                e.target.parentElement.parentElement.rowIndex
+                                value.id
                               )
                             }
                             class="btn btn-danger"
                           >
-                            <i class="far fa-trash-alt" onClick={(e) =>
-                              removeContentType(
-                                e.target.parentElement.parentElement.parentElement.rowIndex
-                              )
-                            } ></i>
+                            <i class="far fa-trash-alt" ></i>
                           </button>
                     </td>
                   </tr>
@@ -253,7 +247,11 @@ const ContentTypeManager = () => {
             <Spinner animation="grow" />
           )}
         </div>
-<nav aria-label="Page navigation example">
+
+		{/* PAGINATION  */}
+
+		<div className="container-fluid">
+		<nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
     <li class={`page-item ${offset == 0 ? 'disabled' : ''} `}>
       <button class="page-link" href="#" onClick={() => setOffset(prev=> prev - 1)}>Previous</button>
@@ -270,21 +268,75 @@ const ContentTypeManager = () => {
 
 	
  
-    <li class={`page-item ${Math.floor(count/limit) == offset ? 'disabled' : ''} `}>
+    <li class={`page-item ${Math.ceil(count/limit) == offset + 1 ? 'disabled' : ''} `}>
       <button class="page-link" href="#" onClick={() => setOffset(prev => prev + 1)}>Next</button>
     </li>
   </ul>
+
 </nav>
+
+
+<div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+    Rows
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+    <li className="dropdown-item" onClick={() => setLimit(2)}>2</li>
+    <li className="dropdown-item" onClick={() => setLimit(5)}>5</li>
+    <li className="dropdown-item"onClick={() => setLimit(10)}>10</li>
+  </ul>
+</div>
+		</div>
+
+	{/* SELECT LIMIT  */}
+
+
+
+
         </div>
      
       </div>
 
-			<Modal show={show} onHide={() => (setShow(prev => !prev), setForm([]))} centered>
+	  <Modal show={show} onHide={() => setShow(!show)} centered>
 				<Modal.Header closeButton>
 					<Modal.Title>New Content Type</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					{form}
+					<Form>
+						<Form.Group className="mb-3" >
+							<Form.Label>Content Name</Form.Label>
+							<Form.Control
+								type="text"
+								placeholder="Enter content name"
+                id="contentName"
+								autoFocus
+								onBlur={(e)=> setContentName(e.target.value)}
+								
+							/>
+						</Form.Group>
+
+						<Form.Group className="mb-3" >
+							<Form.Label>Content Description</Form.Label>
+							<Form.Control
+								type="text"
+                id="contentDescription"
+								placeholder="Enter content description"
+								autoFocus
+								onBlur={(e) => setContentDescription(e.target.value)}
+							/>
+						</Form.Group>
+						<Modal.Footer>
+							<Button variant="secondary" onClick={() => setShow(!show)}>
+								Close
+							</Button>
+							<Button
+								variant="primary"
+								onClick={loadNext}
+							>
+								Next
+							</Button>
+						</Modal.Footer>
+					</Form>
 				</Modal.Body>
 			</Modal>
 
@@ -350,7 +402,7 @@ const ContentTypeManager = () => {
 							Submit
 							</Button>		
 							) : (
-								<Button variant="success"  onClick={()=> (handleSubmit(), setForm([]),setShow(prev => !prev))} >
+								<Button variant="success"  onClick={handleSubmit} >
 								Submit
 								</Button>	
 							) }
