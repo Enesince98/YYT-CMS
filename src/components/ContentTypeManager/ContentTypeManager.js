@@ -256,13 +256,13 @@ const ContentTypeManager = () => {
 <nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
     <li class={`page-item ${offset == 0 ? 'disabled' : ''} `}>
-      <a class="page-link" href="#" onClick={() => setOffset(prev=> prev - 1)}>Previous</a>
+      <button class="page-link" href="#" onClick={() => setOffset(prev=> prev - 1)}>Previous</button>
     </li>
 	{
 		    (() => {
 				let li = [];
 				for (let i = 0; i < Math.ceil(count/limit); i++) {
-				  li.push(<li class={`page-item ${offset == i ? 'active' : ''}`}> <a className="page-link" href="#" onClick={() => setOffset(i)}>{i+1}</a> </li>);
+				  li.push(<li class={`page-item ${offset == i ? 'active' : ''}`}> <button className="page-link" onClick={() => setOffset(i)}>{i+1}</button> </li>);
 				}
 				return li;
 			  })()
@@ -271,7 +271,7 @@ const ContentTypeManager = () => {
 	
  
     <li class={`page-item ${Math.floor(count/limit) == offset ? 'disabled' : ''} `}>
-      <a class="page-link" href="#" onClick={() => setOffset(prev => prev + 1)}>Next</a>
+      <button class="page-link" href="#" onClick={() => setOffset(prev => prev + 1)}>Next</button>
     </li>
   </ul>
 </nav>
