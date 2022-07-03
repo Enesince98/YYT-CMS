@@ -15,7 +15,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import {successToast, errorToast} from "../../Toasts"
-
+import $ from "jquery";
 
 
 
@@ -95,7 +95,29 @@ const ContentTypeManager = () => {
 		}
 
 	}
-
+	const handleEdit = async(editData) => {
+		console.log(editData);
+		editData.name=$("#contentName")[0].value
+		editData.description=$("#contentDescription")[0].value
+		console.log(editData);
+		console.log(data);
+		try {
+			const response = await axios.put('https://localhost:44325/api/ContentTypes',editData,  
+			{
+				headers: { "Content-Type": "application/json" },
+				withCredentials: true,
+			  });
+			  setContentType()
+			  successToast("Content Type edited successfully !")
+				setFields([])
+				setShowNext(false);
+				readData()
+			  
+		}
+		catch(err) {
+			errorToast(err)
+		}
+	}
 
 	const radios = [
 		{ name: "String", value: "0" },
@@ -119,22 +141,22 @@ const ContentTypeManager = () => {
 				<Form.Label>Content Type Name</Form.Label>
 				<Form.Control
 					type="text"
-					value = {contentTypeInfo?.name}
+					defaultValue = {contentTypeInfo?.name}
 					placeholder="Enter content type name"
 					id="contentName"
 					autoFocus
-					onBlur={(e)=> setContentName(e.target.value)}
+					onBlur={(e) => e.target.value.length > 0 ? (setContentName(e.target.value),$("#submitData").removeClass("disabled") ) : $("#submitData").addClass("disabled")}
 				/>
 			</Form.Group>
 			<Form.Group className="mb-3" >
 				<Form.Label>Content Type Description</Form.Label>
 				<Form.Control
 					type="text"
-					value = {contentTypeInfo?.description}
+					defaultValue = {contentTypeInfo?.description}
 					id="contentDescription"
 					placeholder="Enter content type description"
 					autoFocus
-					onBlur={(e) => setContentDescription(e.target.value)}
+					onBlur={(e) => e.target.value.length > 0 ? (setContentDescription(e.target.value),$("#submitData").removeClass("disabled") ) : $("#submitData").addClass("disabled")}
 				/>
 			</Form.Group>
 			<Modal.Footer>
@@ -143,7 +165,8 @@ const ContentTypeManager = () => {
 				</Button>
 				<Button
 					variant="primary"
-					onClick={contentTypeInfo?.name ? (()=> (handleSubmit(), setShow(prev => !prev), setForm([]))):loadNext}
+					onClick={contentTypeInfo?.name ? (()=> (handleEdit(contentTypeInfo), setShow(prev => !prev), setForm([]))):loadNext}
+					id="submitData"
 				>
 					{contentTypeInfo?.name ? "Submit":"Next"}
 				</Button>
@@ -151,15 +174,11 @@ const ContentTypeManager = () => {
 		</Form>)
 		if (typeof(contentTypeInfo) === "undefined"){
 		}
-		console.log(form);
-		console.log(contentTypeInfo)
 	}
 
 
    async function removeContentType(ctid) {
 		if (ctid) {
-
-			console.log(ctid)
 			try {
 				await axios.delete(`https://localhost:44325/api/contentTypes/${ctid}`)
 				successToast('Content Type was deleted successfully')
@@ -170,11 +189,6 @@ const ContentTypeManager = () => {
 			}
 		}
 	  }
-
-
-
-
-
 	return (
 		<div>
 			<ToastContainer/>		
@@ -224,7 +238,7 @@ const ContentTypeManager = () => {
                             </button>
                           </Link>
 						  <button type="button" className="btn btn-warning" onClick={() => (setShow(true), editContentType(value))}>
-						  <i class="fa-solid fa-spell-check" onClick={() => (()=>setShow(true), editContentType(value))}/>
+						  <i class="fa-solid fa-spell-check"/>
 						  </button>
 						  <button
                             type="button"
@@ -297,46 +311,12 @@ const ContentTypeManager = () => {
      
       </div>
 
-	  <Modal show={show} onHide={() => setShow(!show)} centered>
+	  <Modal show={show} onHide={() => (setShow(false), setForm([]))} centered>
 				<Modal.Header closeButton>
 					<Modal.Title>New Content Type</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					<Form>
-						<Form.Group className="mb-3" >
-							<Form.Label>Content Name</Form.Label>
-							<Form.Control
-								type="text"
-								placeholder="Enter content name"
-                id="contentName"
-								autoFocus
-								onBlur={(e)=> setContentName(e.target.value)}
-								
-							/>
-						</Form.Group>
-
-						<Form.Group className="mb-3" >
-							<Form.Label>Content Description</Form.Label>
-							<Form.Control
-								type="text"
-                id="contentDescription"
-								placeholder="Enter content description"
-								autoFocus
-								onBlur={(e) => setContentDescription(e.target.value)}
-							/>
-						</Form.Group>
-						<Modal.Footer>
-							<Button variant="secondary" onClick={() => setShow(!show)}>
-								Close
-							</Button>
-							<Button
-								variant="primary"
-								onClick={loadNext}
-							>
-								Next
-							</Button>
-						</Modal.Footer>
-					</Form>
+					{form}
 				</Modal.Body>
 			</Modal>
 
