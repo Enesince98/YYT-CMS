@@ -9,12 +9,16 @@ import {
 	Spinner
 } from "react-bootstrap";
 import Header from "../Header/Header.jsx";
-import {toast,ToastContainer} from 'react-toastify'
+import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import axios from "../../api/axios";
-import { useNavigate,Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {successToast, errorToast} from "../../Toasts"
+import { getPaginationItemUtilityClass } from "@mui/material";
+
+
+
 const ContentTypeManager = () => {
 	const axiosPrivate = useAxiosPrivate();
 	const [show, setShow] = useState(false);
@@ -24,20 +28,30 @@ const ContentTypeManager = () => {
 	const [contentDescription, setContentDescription] = useState("");
 	const [contentType, setContentType] = useState();
 	const [data, setData] = useState(); // API den gelen response içindeki datayı tutmamıza yarayan değişken. Veri geldiğinde tablonun güncellenmesi için state içinde tutuluyor.
-	const [count, setCount] = useState();
+	const [count, setCount] = useState(0);
 	const [fields,setFields] = useState([])
 	const [fieldName,setFieldName] = useState('');
 	const [radioValue,setRadioValue] = useState('')
 	const [mandatory,setMandatory] = useState(false);
 	const [form, setForm] = useState([]);
+	const [limit,setLimit] = useState(4)
+	const [offset,setOffset] = useState(0);
 	//field name textboxı boşsa veya radio button seçilmemişse butonları disable et.
 	//add fielda tıklanınca ekranı boşalt. ehe
+
+
 	function capitalize(string){
 		return string.trim().replace(/^\w/, (c) => c.toUpperCase())
 	  }
+
+
+	  console.log(Math.floor(count/limit));
+	  console.log(offset);
+
 	const readData = async () => {
 		try{
-		await axiosPrivate.get("https://localhost:44325/api/ContentTypes").then(function (response) {
+		await axiosPrivate.get(`https://localhost:44325/api/ContentTypes?offset=${offset}&limit=${limit}`)
+		.then(function (response) {
 			//Genel bir async api isteği işlemidir. Gelen veriyi stateler içinde tutar
 			setData(response.data.data.contentTypes); //useEffect ile url değiştikçe yeniden istek atılması sağlanır.
 			setCount(response.data.data.totalCount);
@@ -46,9 +60,11 @@ const ContentTypeManager = () => {
 			errorToast(err)
 		}
 	  };
+
+
 	  useEffect(() => {
 		readData();
-	  }, []);
+	  }, [offset,limit]);
 	
 
 	
@@ -64,11 +80,6 @@ const ContentTypeManager = () => {
 
 
 	const handleSubmit = async() => {
-		setContentType({
-			name:contentName,
-			description:contentDescription,
-			fields
-		});
 		try {
 			const response = await axios.post('https://localhost:44325/api/ContentTypes',{
 				name: contentName,
@@ -91,6 +102,8 @@ const ContentTypeManager = () => {
 		}
 
 	}
+
+
 	const radios = [
 		{ name: "String", value: "0" },
 		{ name: "Number", value: "1" },
@@ -150,12 +163,27 @@ const ContentTypeManager = () => {
 	}
 
 
+   async function removeContentType(ctid) {
+		let rowidx = ctid - 1;
+		if (ctid) {
+			try {
+				await axios.delete(`https://localhost:44325/api/contentTypes/${data[rowidx].id}`)
+				successToast('Content Type was deleted successfully')
+				readData();
+			}
+			catch(err) {
+				errorToast(err);
+			}
+		}
+	  }
+
+
 	return (
 		<div>
 			<ToastContainer/>		
 			<Header />
 			{/*<Table url = 'https://localhost:44325/api/ContentTypes' isParent = {true} whoseParent = "contents"/>*/}
-			<div className="container">
+	<div className="container">
         <div className="row">
         <h1 className="mt-5">{`Content Types`}</h1>
         <div class="table-responsive">
@@ -225,6 +253,28 @@ const ContentTypeManager = () => {
             <Spinner animation="grow" />
           )}
         </div>
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class={`page-item ${offset == 0 ? 'disabled' : ''} `}>
+      <a class="page-link" href="#" onClick={() => setOffset(prev=> prev - 1)}>Previous</a>
+    </li>
+	{
+		    (() => {
+				let li = [];
+				for (let i = 0; i < Math.ceil(count/limit); i++) {
+				  li.push(<li class={`page-item ${offset == i ? 'active' : ''}`}> <a className="page-link" href="#" onClick={() => setOffset(i)}>{i+1}</a> </li>);
+				}
+				return li;
+			  })()
+	}
+
+	
+ 
+    <li class={`page-item ${Math.floor(count/limit) == offset ? 'disabled' : ''} `}>
+      <a class="page-link" href="#" onClick={() => setOffset(prev => prev + 1)}>Next</a>
+    </li>
+  </ul>
+</nav>
         </div>
      
       </div>
