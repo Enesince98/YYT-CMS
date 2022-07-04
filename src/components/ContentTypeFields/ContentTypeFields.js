@@ -1,13 +1,14 @@
 import React from "react";
-import { Button, Modal, Form,Spinner } from "react-bootstrap";
+import { Button, Modal, Form, Spinner } from "react-bootstrap";
 import Header from "../Header/Header.jsx";
 import { useLocation } from "react-router-dom";
 // import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import axios from "../../api/axios";
 import { useState, useEffect } from "react";
-import $ from "jquery"
+import $ from "jquery";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {successToast, errorToast} from "../../Toasts"
 const ContentTypeFields = () => {
   // const axiosPrivate = useAxiosPrivate();
   // const [url,setUrl] = useState("https://localhost:44325/api/ContentTypes")
@@ -18,9 +19,11 @@ const ContentTypeFields = () => {
   const [newData, setNewData] = useState();
   const location = useLocation().pathname.split("/");
   const content_type_id = location[location.length - 1];
-  const [contentId, setContentId] = useState();
+  const [fieldId, setFieldId] = useState();
   const [url, setUrl] = useState(
-    "https://62a492ef47e6e40063951ec5.mockapi.io/api/contentTypes/"+content_type_id+"/field"
+    "https://62a492ef47e6e40063951ec5.mockapi.io/api/contentTypes/" +
+      content_type_id +
+      "/field"
   );
   const readData = async () => {
     await axios.get(url).then(function (response) {
@@ -31,89 +34,91 @@ const ContentTypeFields = () => {
     });
   };
   useEffect(() => {
-    readData(); //istek atmak için oluşturulan fonksiyonu çağırır (BUNUN OLMAMASI DAHA MANTIKLI AMA KALDIRAMADIK.)
+    readData();
   }, []);
   function addContent(edit) {
     modalFields.push(
       <Form.Group className="mb-3">
         <Form.Label>Field Name</Form.Label>
-        <Form.Control id="fieldName" defaultValue={edit?.fieldName} type="text" />
+        <Form.Control
+          id="fieldName"
+          defaultValue={edit?.fieldName}
+          type="text"
+        />
         <Form.Label>Field Description</Form.Label>
-        <Form.Control id="fieldDescription" defaultValue={edit?.fieldDescription} type="text" />
-        {edit ? (<Form.Group className="mb-3"><Form.Label>Field Type</Form.Label>
-        <Form.Control id="fieldType" value={edit.fieldType} type="text" disabled/>
-        <Form.Check type="checkbox" id="mandatory" label="Mandatory" checked={edit.mandatory}  disabled/></Form.Group>)
-        
-        :
-        
-        (<Form.Group className="mb-3"><Form.Label>Field Type</Form.Label>
-        <Form.Select id="fieldType">
+        <Form.Control
+          id="fieldDescription"
+          defaultValue={edit?.fieldDescription}
+          type="text"
+        />
+        {edit ? (
+          <Form.Group className="mb-3">
+            <Form.Label>Field Type</Form.Label>
+            <Form.Control
+              id="fieldType"
+              value={edit.fieldType}
+              type="text"
+              disabled
+            />
+            <Form.Check
+              type="checkbox"
+              id="mandatory"
+              label="Mandatory"
+              checked={edit.mandatory}
+              disabled
+            />
+          </Form.Group>
+        ) : (
+          <Form.Group className="mb-3">
+            <Form.Label>Field Type</Form.Label>
+            <Form.Select id="fieldType">
               <option value="0">Number</option>
               <option value="1">String</option>
               <option value="2">Date</option>
               <option value="3">Boolean</option>
             </Form.Select>
-        <Form.Check type="checkbox" id="mandatory" label="Mandatory" /></Form.Group>)}
+            <Form.Check type="checkbox" id="mandatory" label="Mandatory" />
+          </Form.Group>
+        )}
       </Form.Group>
     );
   }
 
-const handleSubmit = async () => {
-    let a = {
-        id:contentId,
-        contentId: content_type_id,
-        fieldName: $("#fieldName")[0].value,
-        fieldType: $("#fieldType")[0].value,
-        fieldDescription: $("#fieldDescription")[0].value,
-        mandatory: $("#mandatory")[0].checked,
+  async function handleSubmit() {
+    let fieldData= {
+      contentId: content_type_id,
+      fieldName: $("#fieldName")[0].value,
+      fieldType: $("#fieldType")[0].value,
+      fieldDescription: $("#fieldDescription")[0].value,
+      mandatory: $("#mandatory")[0].checked,
+    };
+    if(fieldId){
+        fieldData["id"]=fieldId
     }
-    console.log(a);
+    console.log(fieldData);
     try {
-        if(contentId){await axios.put(
-            "https://62a492ef47e6e40063951ec5.mockapi.io/api/contentTypes/"+content_type_id+"/field/"+contentId,
-            {
-                id:contentId,
-                contentId: content_type_id,
-                fieldName: $("#fieldName")[0].value,
-                fieldType: $("#fieldType")[0].value,
-                fieldDescription: $("#fieldDescription")[0].value,
-                mandatory: $("#mandatory")[0].checked,
-            }
-        );}
-        else{
-            await axios.post(
-                "https://62a492ef47e6e40063951ec5.mockapi.io/api/contentTypes/"+content_type_id+"/field",
-                {
-                    contentId: content_type_id,
-                    fieldName: $("#fieldName")[0].value,
-                    fieldType: $("#fieldType")[0].value,
-                    fieldDescription: $("#fieldDescription")[0].value,
-                    mandatory: $("#mandatory")[0].checked,
-                }
-            );
-        }
-        
-        toast.success("Field added successfully !", {
-            position: "bottom-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
-        readData();
+      if (fieldId) {
+        await axios.put(
+          "https://62a492ef47e6e40063951ec5.mockapi.io/api/contentTypes/" +
+            content_type_id +
+            "/field/" +
+            fieldId,
+            fieldData
+        );
+      } else {
+        await axios.post(
+          "https://62a492ef47e6e40063951ec5.mockapi.io/api/contentTypes/" +
+            content_type_id +
+            "/field",
+            fieldData
+        );
+      }
+      successToast("Field added successfully !");
+      readData();
     } catch (err) {
-        toast.error(err, {
-            position: "bottom-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
-    }}
+      errorToast(err);
+    }
+  }
 
   function sendData(){
     setNewData({
@@ -130,7 +135,7 @@ const handleSubmit = async () => {
 
   return (
     <div>
-        <ToastContainer></ToastContainer>
+        <ToastContainer />
       <Header />
       {/* <Table isParent = {false} url = {'https://62a492ef47e6e40063951ec5.mockapi.io/api/contentTypes/'+content_type_id.toString()+'/contents'}/> */}
       <div class="container">
@@ -165,7 +170,7 @@ const handleSubmit = async () => {
                       <button className="btn btn-success" >
                         <i
                           class="far fa-edit"
-                          onClick={() => (setShow(true), addContent(value), setContentId(value.id))}
+                          onClick={() => (setShow(true), addContent(value), setFieldId(value.id))}
                         ></i>
                       </button>
                     </td>
