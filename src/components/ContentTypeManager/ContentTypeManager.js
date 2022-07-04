@@ -96,12 +96,14 @@ const ContentTypeManager = () => {
 
 	}
 	const handleEdit = async(editData) => {
-		console.log(editData);
-		editData.name=$("#contentName")[0].value
-		editData.description=$("#contentDescription")[0].value
-		console.log(editData);
-		console.log(data);
+
+		
+
 		try {
+			
+			if($("#contentName")[0].value.length > 0 && $("#contentDescription")[0].value.length > 0) {
+				editData.name=$("#contentName")[0].value
+			editData.description=$("#contentDescription")[0].value
 			const response = await axios.put('https://localhost:44325/api/ContentTypes',editData,  
 			{
 				headers: { "Content-Type": "application/json" },
@@ -110,10 +112,19 @@ const ContentTypeManager = () => {
 			  setContentType()
 			  successToast("Content Type edited successfully !")
 				setFields([])
+				setForm([])
 				setShowNext(false);
+				setShow(prev => !prev)
 				readData()
 			  
+			}
+			else {
+				errorToast('Name and description can not be empty !')
+				
+	
+			}	
 		}
+			
 		catch(err) {
 			errorToast(err)
 		}
@@ -145,7 +156,7 @@ const ContentTypeManager = () => {
 					placeholder="Enter content type name"
 					id="contentName"
 					autoFocus
-					onBlur={(e) => e.target.value.length > 0 ? (setContentName(e.target.value),$("#submitData").removeClass("disabled") ) : $("#submitData").addClass("disabled")}
+					onBlur={(e) => setContentName(e.target.value)}
 				/>
 			</Form.Group>
 			<Form.Group className="mb-3" >
@@ -156,7 +167,7 @@ const ContentTypeManager = () => {
 					id="contentDescription"
 					placeholder="Enter content type description"
 					autoFocus
-					onBlur={(e) => e.target.value.length > 0 ? (setContentDescription(e.target.value),$("#submitData").removeClass("disabled") ) : $("#submitData").addClass("disabled")}
+					onBlur={(e) => setContentDescription(e.target.value)}
 				/>
 			</Form.Group>
 			<Modal.Footer>
@@ -165,7 +176,7 @@ const ContentTypeManager = () => {
 				</Button>
 				<Button
 					variant="primary"
-					onClick={contentTypeInfo?.name ? (()=> (handleEdit(contentTypeInfo), setShow(prev => !prev), setForm([]))):loadNext}
+					onClick={contentTypeInfo?.name ? (()=> (handleEdit(contentTypeInfo) )):loadNext}
 					id="submitData"
 				>
 					{contentTypeInfo?.name ? "Submit":"Next"}
@@ -219,11 +230,11 @@ const ContentTypeManager = () => {
                     </td>
                     ))}
                     {/* satıra tıklandığında seçili girdi için eğer alt tablo varsa onun gösterildiği tablo sayfası açılır.  */}
-                    <td className="d-flex justify-content-around">
+                    <td className="d-flex justify-content-evenly">
 					<Link to={"/contents/"+(Object.values(value)[1])+"/"+(idx+2)}> 
                         <button
                             type="button"
-                            class="btn btn-success me-3"
+                            class="btn btn-success"
                           >
                             <i class="far fa-eye"/>
 
@@ -232,7 +243,7 @@ const ContentTypeManager = () => {
 						 <Link to={"/content-type/"+(idx+2)}>
                           <button
                             type="button"
-                            class="btn btn-primary me-3"
+                            class="btn btn-primary"
                           >
                             <i class="far fa-edit"/>
                             </button>
